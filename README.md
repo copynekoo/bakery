@@ -7,13 +7,13 @@ Backend: ExpressJS
 
 Database: PostgreSQL
 
-Install Node version > 24, NPM, and PostgreSQL
+**Install Node version > 24, NPM, and PostgreSQL**
 
 In each frontend and backend use `npm install` to install dependencies
 
 `npm install --only=dev` to install development dependencies
 
-Frontend script commands:
+**Frontend script commands:**
 
 `npm run dev` to run a live web server, recommended for development
 
@@ -21,8 +21,25 @@ Frontend script commands:
 
 `npm run preview` to deploy a local static server
 
-Backend script commands:
+**Backend script commands:**
 
 `npm run dev` to run a live backend server, recommended for development
 
 `npm run start` to run a local backend server
+
+**Frontend .env example**
+
+```API_DOMAIN=http://localhost:3000```
+
+**Backend .env example**
+
+```
+SERVERPORT=3000
+FRONTENDDOMAIN="http://localhost:5173"
+# Database
+PGHOST=localhost
+PGPORT=5432
+PGDATABASE=bakery
+PGUSER=postgres
+PGPASSWORD=somchok
+```
