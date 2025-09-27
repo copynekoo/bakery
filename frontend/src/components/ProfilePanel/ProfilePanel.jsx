@@ -16,7 +16,6 @@ const ProfilePanel = function() {
   const updateShippingDst = async function(shippingDst) {
   try {
     const requestBody = { "defaultshippingdst": shippingDst };
-    // const response = await axios.post(import.meta.env.VITE_API_DOMAIN + '/' + 'api' + '/' + 'profile' + '/' + 'defaultshippingdst', {withCredentials: true}, requestBody);
     const response = await axios({
       method: "put",
       url: import.meta.env.VITE_API_DOMAIN + '/' + 'api' + '/' + 'profile' + '/' + 'defaultshippingdst',

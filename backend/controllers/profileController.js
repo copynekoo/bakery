@@ -31,4 +31,4 @@ async function setDefaultShippingDst(username, defaultshippingdst) {
   return updateShippingDst;
 }
 
-export { getProfileData, setDefaultShippingDst }
+export { getProfileData, findCustomerId, setDefaultShippingDst }

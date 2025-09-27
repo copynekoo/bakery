@@ -9,8 +9,8 @@ router.use(bodyParser.json());
 
 router.get('/', verifyToken, async (req, res) => {
   const username = req.username;
-  const profile = await getProfileData(username);
-  res.status(200).json(profile);
+  const order = await getOrder(username);
+  res.status(200).json(order);
 });
 
 export default router;
