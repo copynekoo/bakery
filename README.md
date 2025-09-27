@@ -29,13 +29,13 @@ In each frontend and backend use `npm install` to install dependencies
 
 **Frontend .env example**
 
-```API_DOMAIN=http://localhost:3000```
+```VITE_API_DOMAIN=http://localhost:3000```
 
 **Backend .env example**
 
 ```
 SERVERPORT=3000
-FRONTENDDOMAIN="http://localhost:5173"
+FRONTEND_DOMAIN="http://localhost:5173"
 # Database
 PGHOST=localhost
 PGPORT=5432
