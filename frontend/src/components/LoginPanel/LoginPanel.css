@@ -1,0 +1,9 @@
+.login {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.register {
+  margin-left: 8px;
+}

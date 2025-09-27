@@ -1,0 +1,12 @@
+.ordersTable {
+  border-collapse: collapse;
+}
+
+.ordersTable, td, th {
+  border: 1px solid black;
+}
+
+.ordersHeading {
+  background-color: black;
+  color: white;
+}

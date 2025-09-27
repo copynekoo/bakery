@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import ProductItem from '../components/ProductItem/ProductItem.jsx'
+import ProductDisplay from '../components/ProductDisplay/ProductDisplay.jsx'
 
 export const Route = createFileRoute('/')({
   component: Index,
@@ -8,8 +8,7 @@ export const Route = createFileRoute('/')({
 function Index() {
   return (
     <div className="p-2">
-      <h3>Products</h3>
-      <ProductItem/>
+      <ProductDisplay/>
     </div>
   )
 }

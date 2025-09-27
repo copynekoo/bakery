@@ -1,18 +1,34 @@
 import express from 'express'
 import productRouter from './routes/productRoute.js'
+import stockRouter from './routes/stockRoute.js'
+import productItemRouter from './routes/productItemRoute.js'
+import loginRouter from './routes/loginRoute.js'
+import registerRouter from './routes/registerRoute.js'
+import verifyRouter from './routes/verifyRoute.js'
+import profileRouter from './routes/profileRoute.js'
+import orderRouter from './routes/orderRoute.js'
 import cors from 'cors'
 import 'dotenv/config'
 
 const app = express();
 const port = process.env.SERVERPORT || 3000;
 
-app.use(cors())
 var corsOptions = {
-  origin: process.env.FRONTENDDOMAIN,
+  origin: process.env.FRONTEND_DOMAIN,
+  credentials: true,
   optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
 }
 
+app.use('/assets', express.static('assets'))
+
 app.use("/api/product", cors(corsOptions), productRouter);
+app.use("/api/productItems", cors(corsOptions), productItemRouter);
+app.use("/api/stock", cors(corsOptions), stockRouter);
+app.use("/api/auth/login", cors(corsOptions), loginRouter);
+app.use("/api/auth/register", cors(corsOptions), registerRouter);
+app.use("/api/verifyToken", cors(corsOptions), verifyRouter);
+app.use("/api/profile", cors(corsOptions), profileRouter);
+app.use("/api/orders", cors(corsOptions), orderRouter);
 
 app.get("/", (req, res) => {
   res.send("Hi!");

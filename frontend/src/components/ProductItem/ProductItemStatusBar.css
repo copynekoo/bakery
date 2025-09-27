@@ -1,0 +1,19 @@
+.productBar {
+  display: grid;
+  grid-template-columns: auto auto;
+}
+
+.productBar-left {
+  padding-left: 16px;
+  justify-self: start;
+}
+
+.productBar-right {
+  padding-right: 16px;
+  color: #0000EE;
+  justify-self: end;
+}
+
+.productBar-right input {
+  margin-right: 8px;
+}

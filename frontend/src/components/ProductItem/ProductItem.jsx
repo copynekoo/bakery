@@ -1,42 +1,14 @@
-import React, { useEffect, useState } from "react"
-import axios from "axios";
+import "./ProductItem.css"
+import ProductItemStatusBar from "./ProductItemStatusBar.jsx";
 
-// const getProducts = function() {
-//   axios.get('http://localhost:3000/api/product')
-//     .then(function (response) {
-//       // handle success
-//       console.log(response);
-//       return response;
-//     })
-//     .catch(function (error) {
-//       // handle error
-//       console.log(error);
-//     })
-//     .finally(function () {
-//       // always executed
-//     });
-// }
-
-// getProducts();
-
-const ProductItem = function() {
-  const [data, setData] = useState([]);
-  
-  useEffect(() => {
-    // Make GET request to fetch data
-        axios
-            .get("http://localhost:3000/api/product")
-            .then((response) => {
-            setData(response.data);
-          });
-  }, []);
-
+const ProductItem = function({p_id, p_name, p_price, remainingItem, img_url}) {
   return (
-    <ul>
-      {data.map((product) => {
-        return <li key={product.p_id}>{product.p_name}</li>
-      })}
-    </ul>
+    <div className="card" key={p_id}>
+      <img src={img_url} alt={p_name} style={{width: 100 + '%'}}/>
+      <h2>{p_name}</h2>
+      <p className="price">{p_price} บาท</p>
+      <ProductItemStatusBar remainingItem={remainingItem}/>
+    </div> 
   )
 }
 

@@ -1,0 +1,8 @@
+.productContainer {
+  margin: 32px 32px;
+  display: grid;
+  /* border: 10px solid red; */
+  justify-content: center;
+  gap: 50px;
+  grid-template-columns: auto auto auto;
+}
