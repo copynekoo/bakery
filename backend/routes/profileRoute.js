@@ -1,7 +1,7 @@
 import express from "express"
 import bodyParser from "body-parser";
 import { verifyToken } from "../middleware/authMiddleware.js"
-import { getProfileData, setDefaultShippingDst } from "../controllers/profileController.js"
+import { getProfileData, setDefaultShippingDst, getDefaultShippingDst } from "../controllers/profileController.js"
 
 const router = express.Router();
 
@@ -29,6 +29,12 @@ router.put("/defaultshippingdst", verifyToken, async (req, res) => {
       "message": "error"
     })
   }
+});
+
+router.get("/defaultshippingdst", verifyToken, async (req, res) => {
+  const username = req.username;
+  const shippingdestination = await getDefaultShippingDst(username);
+  res.status(200).json(shippingdestination);
 });
 
 export default router;

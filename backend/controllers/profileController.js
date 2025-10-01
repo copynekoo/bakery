@@ -21,6 +21,16 @@ async function getProfileData(username) {
   return profileData;
 }
 
+async function getDefaultShippingDst(username) {
+  const shippingDestination = await sql `
+    select customers.defaultshippingdst
+    from customer_accounts
+    join customers ON customer_accounts.c_id=customers.c_id
+    where customer_accounts.username = ${username};
+  `
+  return shippingDestination;
+}
+
 async function setDefaultShippingDst(username, defaultshippingdst) {
   const customerId = await findCustomerId(username);
   const updateShippingDst = await sql`
@@ -31,4 +41,5 @@ async function setDefaultShippingDst(username, defaultshippingdst) {
   return updateShippingDst;
 }
 
-export { getProfileData, findCustomerId, setDefaultShippingDst }
+
+export { getProfileData, findCustomerId, setDefaultShippingDst, getDefaultShippingDst }

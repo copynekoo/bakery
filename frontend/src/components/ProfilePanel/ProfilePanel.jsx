@@ -20,7 +20,7 @@ const ProfilePanel = function() {
       method: "put",
       url: import.meta.env.VITE_API_DOMAIN + '/' + 'api' + '/' + 'profile' + '/' + 'defaultshippingdst',
       withCredentials: true,
-      data: { defaultshippingdst: shippingDst },
+      data: requestBody,
     })
       } catch (error) {
         console.log(error);

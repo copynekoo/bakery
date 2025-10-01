@@ -49,7 +49,10 @@ const OrdersTable = function() {
         const order_method = order.order_method;
         const product_id = order.product_id;
         const quantity = order.quantity;
-        const order_creation_date = Date(order.creation_date).toLocaleString();
+        const order_creation_date = order.order_creation_date;
+        const date = new Date(order_creation_date);
+        const formattedOrderCreationDate = date.toLocaleString();
+        console.log(date);  
         const status = order.status;
         const status_update_date = order.status_update_date;
         const payment_proof = order.payment_proof;
@@ -60,7 +63,7 @@ const OrdersTable = function() {
           <th>{order_method}</th>
           <th>{product_id}</th>
           <th>{quantity}</th>
-          <th>{order_creation_date}</th>
+          <th>{formattedOrderCreationDate}</th>
           <th>{status}</th>
           <th>{status_update_date}</th>
           <th>{payment_proof}</th>
