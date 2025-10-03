@@ -14,6 +14,8 @@ import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as OrdersRouteImport } from './routes/orders'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as EmployeesIndexRouteImport } from './routes/employees/index'
+import { Route as EmployeesDashboardRouteImport } from './routes/employees/dashboard'
 
 const RegisterRoute = RegisterRouteImport.update({
   id: '/register',
@@ -40,6 +42,16 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EmployeesIndexRoute = EmployeesIndexRouteImport.update({
+  id: '/employees/',
+  path: '/employees/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EmployeesDashboardRoute = EmployeesDashboardRouteImport.update({
+  id: '/employees/dashboard',
+  path: '/employees/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -47,6 +59,8 @@ export interface FileRoutesByFullPath {
   '/orders': typeof OrdersRoute
   '/profile': typeof ProfileRoute
   '/register': typeof RegisterRoute
+  '/employees/dashboard': typeof EmployeesDashboardRoute
+  '/employees': typeof EmployeesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -54,6 +68,8 @@ export interface FileRoutesByTo {
   '/orders': typeof OrdersRoute
   '/profile': typeof ProfileRoute
   '/register': typeof RegisterRoute
+  '/employees/dashboard': typeof EmployeesDashboardRoute
+  '/employees': typeof EmployeesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -62,13 +78,37 @@ export interface FileRoutesById {
   '/orders': typeof OrdersRoute
   '/profile': typeof ProfileRoute
   '/register': typeof RegisterRoute
+  '/employees/dashboard': typeof EmployeesDashboardRoute
+  '/employees/': typeof EmployeesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/orders' | '/profile' | '/register'
+  fullPaths:
+    | '/'
+    | '/login'
+    | '/orders'
+    | '/profile'
+    | '/register'
+    | '/employees/dashboard'
+    | '/employees'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/orders' | '/profile' | '/register'
-  id: '__root__' | '/' | '/login' | '/orders' | '/profile' | '/register'
+  to:
+    | '/'
+    | '/login'
+    | '/orders'
+    | '/profile'
+    | '/register'
+    | '/employees/dashboard'
+    | '/employees'
+  id:
+    | '__root__'
+    | '/'
+    | '/login'
+    | '/orders'
+    | '/profile'
+    | '/register'
+    | '/employees/dashboard'
+    | '/employees/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -77,6 +117,8 @@ export interface RootRouteChildren {
   OrdersRoute: typeof OrdersRoute
   ProfileRoute: typeof ProfileRoute
   RegisterRoute: typeof RegisterRoute
+  EmployeesDashboardRoute: typeof EmployeesDashboardRoute
+  EmployeesIndexRoute: typeof EmployeesIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -116,6 +158,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/employees/': {
+      id: '/employees/'
+      path: '/employees'
+      fullPath: '/employees'
+      preLoaderRoute: typeof EmployeesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/employees/dashboard': {
+      id: '/employees/dashboard'
+      path: '/employees/dashboard'
+      fullPath: '/employees/dashboard'
+      preLoaderRoute: typeof EmployeesDashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -125,6 +181,8 @@ const rootRouteChildren: RootRouteChildren = {
   OrdersRoute: OrdersRoute,
   ProfileRoute: ProfileRoute,
   RegisterRoute: RegisterRoute,
+  EmployeesDashboardRoute: EmployeesDashboardRoute,
+  EmployeesIndexRoute: EmployeesIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

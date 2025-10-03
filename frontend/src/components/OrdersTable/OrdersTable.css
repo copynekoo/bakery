@@ -1,5 +1,6 @@
 .ordersTable {
   border-collapse: collapse;
+  white-space:nowrap;
 }
 
 .ordersTable, td, th {

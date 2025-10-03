@@ -7,6 +7,7 @@ import registerRouter from './routes/registerRoute.js'
 import verifyRouter from './routes/verifyRoute.js'
 import profileRouter from './routes/profileRoute.js'
 import orderRouter from './routes/orderRoute.js'
+import employeeLoginRouter from './routes/employees/loginRoute.js'
 import cors from 'cors'
 import 'dotenv/config'
 
@@ -20,6 +21,7 @@ var corsOptions = {
 }
 
 app.use('/assets', express.static('assets'))
+app.use('/public', express.static('public'))
 
 app.use("/api/product", cors(corsOptions), productRouter);
 app.use("/api/productItems", cors(corsOptions), productItemRouter);
@@ -29,6 +31,8 @@ app.use("/api/auth/register", cors(corsOptions), registerRouter);
 app.use("/api/verifyToken", cors(corsOptions), verifyRouter);
 app.use("/api/profile", cors(corsOptions), profileRouter);
 app.use("/api/orders", cors(corsOptions), orderRouter);
+
+app.use("/api/employees/auth/login", cors(corsOptions), employeeLoginRouter);
 
 app.get("/", (req, res) => {
   res.send("Hi!");

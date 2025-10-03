@@ -8,6 +8,13 @@ async function getNextOrderId() {
   return nextOrderId;
 }
 
+async function getAllOrders() {
+  const orders = await sql`
+
+  `
+  return orders;
+}
+
 async function getOrder(username) {
   const customerId = await findCustomerId(username);
   const orders = await sql`
@@ -54,4 +61,34 @@ async function preOrder(username, data) {
   };
 }
 
-export { getOrder, preOrder }
+async function checkStatus(username, order_id) {
+  const customerId = await findCustomerId(username);
+  const checkStatus = await sql`
+    select orders.status
+    from orders
+    where customer_id = ${customerId} and order_id = ${order_id};
+  `
+  return checkStatus[0]['status']
+}
+
+async function addPayment(username, order_id, file) {
+  const customerId = await findCustomerId(username);
+  const check_status = await checkStatus(username, order_id);
+
+  if (check_status === 'Waiting for payment') {
+    const changeStatus = await sql`
+          update orders
+          set status = 'Waiting for approval'
+          where customer_id = ${customerId} and order_id = ${order_id};
+        `
+  }
+
+  const orders = await sql`
+    update orders
+    set payment_proof = ${file}
+    where customer_id = ${customerId} and order_id = ${order_id};
+  `
+  return orders;
+}
+
+export { getOrder, preOrder, addPayment }

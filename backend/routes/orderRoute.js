@@ -1,7 +1,22 @@
 import express from "express"
 import bodyParser from "body-parser";
+import multer from "multer";
 import { verifyToken } from "../middleware/authMiddleware.js"
-import { getOrder, preOrder } from "../controllers/orderController.js"
+import { getOrder, preOrder, addPayment } from "../controllers/orderController.js"
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    return cb(null, "./public/uploads")
+  },
+  filename: function (req, file, cb) {
+    const fileName = `${Date.now()}-${file.originalname}`
+    cb(null, fileName)
+  }
+})
+
+const upload = multer({
+  storage: storage
+})
 
 const router = express.Router();
 
@@ -30,5 +45,12 @@ router.post("/preOrder", verifyToken, async (req, res) => {
     })
   }
 });
+
+router.post('/payment', verifyToken, upload.single('file'), (req, res) => {
+  const fileName = req.file.filename;
+  const username = req.username;
+  const orderId = req.get('order_id');
+  addPayment(username, orderId, fileName);
+})
 
 export default router;
