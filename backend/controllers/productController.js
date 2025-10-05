@@ -9,4 +9,12 @@ async function getAllProducts() {
   return products;
 }
 
-export { getAllProducts }
+async function getAllProductCategories() {
+  const categories = await sql`
+    select categories
+    from product_categories;
+  `
+  return categories;
+}
+
+export { getAllProducts, getAllProductCategories }
