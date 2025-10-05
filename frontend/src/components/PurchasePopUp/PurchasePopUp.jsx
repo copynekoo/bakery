@@ -9,7 +9,7 @@ const PurchasePopUp = function({id, name, price, remainingItem, onClose}) {
   const [defaultShippingDestination, setDefaultShippingDestination] = useState();
   const [customShippingDestination, setCustomShippingDestination] = useState("");
 
-  const preOrder = async function(p_id, method, quantity, shippingdestination) {
+  const purchase = async function(p_id, method, quantity, shippingdestination) {
   try {
     const requestBody = 
     [{ 
@@ -20,7 +20,7 @@ const PurchasePopUp = function({id, name, price, remainingItem, onClose}) {
     }];
     const response = await axios({
       method: "post",
-      url: import.meta.env.VITE_API_DOMAIN + '/' + 'api' + '/' + 'orders' + '/' + 'preOrder',
+      url: import.meta.env.VITE_API_DOMAIN + '/' + 'api' + '/' + 'orders' + '/' + 'purchase',
       withCredentials: true,
       data: requestBody
     })
@@ -57,6 +57,7 @@ const PurchasePopUp = function({id, name, price, remainingItem, onClose}) {
   }
 
   const showBuyNowOption = function(isOpen) {
+    const [useDefaultShippingDestination, setUseDefaultShippingDestination] = useState(true);
     if (!isOpen) return null;
 
     return (
@@ -65,6 +66,10 @@ const PurchasePopUp = function({id, name, price, remainingItem, onClose}) {
         <div>Buying {buyNowQuantity} {name} for each {price}</div>
         <div>Total Price {buyNowQuantity*price} Baht </div>
         <div className="buyNowMenu">Quantity <input type="number" id="quantity" value={buyNowQuantity} onChange={e => setBuyNowQuantity(e.target.value)} name="quantity" min="1" max={remainingItem}/></div>
+        <input type="checkbox" id="useShippingDst" name="useShippingDst" value="useShippingDst" checked={useDefaultShippingDestination} onChange={() => setUseDefaultShippingDestination(!useDefaultShippingDestination)}/>
+        <label htmlFor="useShippingDst">Use default shipping destination</label><br/><br/>
+        {shippingDestination(useDefaultShippingDestination)}
+        <button onClick={() => purchase(id, "Buy Now", buyNowQuantity, (useDefaultShippingDestination ? defaultShippingDestination : customShippingDestination))}>Pre Order</button><br/>
       </div>
     )
   }
@@ -82,7 +87,7 @@ const PurchasePopUp = function({id, name, price, remainingItem, onClose}) {
         <input type="checkbox" id="useShippingDst" name="useShippingDst" value="useShippingDst" checked={useDefaultShippingDestination} onChange={() => setUseDefaultShippingDestination(!useDefaultShippingDestination)}/>
         <label htmlFor="useShippingDst">Use default shipping destination</label><br/><br/>
         {shippingDestination(useDefaultShippingDestination)}
-        <button onClick={() => preOrder(id, "Pre Order", preOrderQuantity, (useDefaultShippingDestination ? defaultShippingDestination : customShippingDestination))}>Pre Order</button><br/>
+        <button onClick={() => purchase(id, "Pre Order", preOrderQuantity, (useDefaultShippingDestination ? defaultShippingDestination : customShippingDestination))}>Pre Order</button><br/>
       </div>
     )
   }
