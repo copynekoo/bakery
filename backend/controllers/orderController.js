@@ -1,5 +1,6 @@
 import sql from '../config/db.js'
 import { findCustomerId } from './profileController.js'
+import { getProductStock } from './productItemController.js';
 
 async function getNextOrderId() {
   const nextOrderId = await sql`
@@ -27,7 +28,7 @@ async function getOrder(username) {
   return orders;
 }
 
-async function preOrder(username, data) {
+async function purchase(username, data) {
   try {
     const customerId = await findCustomerId(username);
     const shippingdestination = data[0]['shippingdestination'];
@@ -43,6 +44,9 @@ async function preOrder(username, data) {
       const product_id = data[key]['product_id'];
       const order_method = data[key]['order_method'];
       const quantity = data[key]['quantity'];
+      const productStock = await getProductStock(product_id);
+      if ((order_method != 'Buy Now') && (order_method != 'Pre Order')) return; // Check if buy method is valid
+      if ((order_method == 'Buy Now') && (productStock-quantity < 0)) return; // If using buy now method, then it should has sufficient product stock
       
       const order_lines = await sql`
       insert into order_lines (order_id, product_id, quantity, order_method)
@@ -52,12 +56,12 @@ async function preOrder(username, data) {
   } catch (error) {
     return {
       status: 500,
-      error: "Pre Order failed."
+      error: "Purchase failed."
     }
   }
   return {
     status: 200,
-    success: "Pre Order success."
+    success: "Purchase success."
   };
 }
 
@@ -91,4 +95,4 @@ async function addPayment(username, order_id, file) {
   return orders;
 }
 
-export { getOrder, preOrder, addPayment }
+export { getOrder, purchase, addPayment }

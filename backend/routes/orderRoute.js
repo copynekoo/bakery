@@ -2,7 +2,7 @@ import express from "express"
 import bodyParser from "body-parser";
 import multer from "multer";
 import { verifyToken } from "../middleware/authMiddleware.js"
-import { getOrder, preOrder, addPayment } from "../controllers/orderController.js"
+import { getOrder, purchase, addPayment } from "../controllers/orderController.js"
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -28,11 +28,11 @@ router.get('/', verifyToken, async (req, res) => {
   res.status(200).json(order);
 });
 
-router.post("/preOrder", verifyToken, async (req, res) => {
+router.post("/purchase", verifyToken, async (req, res) => {
   try {
     const username = req.username;
     const data = req.body;
-    const pre_order = await preOrder(username, data);
+    const purchased = await purchase(username, data);
     res.status(200).json({
       "status": "success",
       "message": "preorder success"

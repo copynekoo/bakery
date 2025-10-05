@@ -11,4 +11,16 @@ async function getAllProductItems() {
   return productItems;
 }
 
-export { getAllProductItems }
+async function getProductStock(product_id) {
+  const productItems = await sql`
+    select
+      products.p_id, stocks.remaining_item
+    from products
+    left join stocks
+    on products.p_id = stocks.p_id
+    where products.p_id = ${product_id};
+  `
+  return productItems[0]['remaining_item'];
+}
+
+export { getAllProductItems, getProductStock }
