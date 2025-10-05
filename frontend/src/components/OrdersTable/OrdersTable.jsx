@@ -29,7 +29,8 @@ const OrdersTable = function() {
         <tr>
           <th>Order ID</th>
           <th>Order Method</th>
-          <th>Product</th>
+          <th>Product ID</th>
+          <th>Product Name</th>
           <th>Quantity</th>
           <th>Order Creation Date</th>
           <th>Status</th>
@@ -48,6 +49,7 @@ const OrdersTable = function() {
         const order_id = order.order_id;
         const order_method = order.order_method;
         const product_id = order.product_id;
+        const product_name = order.p_name;
         const quantity = order.quantity;
         const order_creation_date = order.order_creation_date;
         const date = new Date(order_creation_date);
@@ -57,7 +59,7 @@ const OrdersTable = function() {
         const payment_proof = order.payment_proof;
         const shipping_destination = order.shipping_destination;
         return (
-          <TableRow order_id={order_id} order_method={order_method} product_id={product_id} quantity={quantity} formattedOrderCreationDate={formattedOrderCreationDate} status={status} status_update_date={status_update_date} payment_proof={payment_proof} shipping_destination={shipping_destination}/>
+          <TableRow order_id={order_id} order_method={order_method} product_id={product_id} product_name={product_name} quantity={quantity} formattedOrderCreationDate={formattedOrderCreationDate} status={status} status_update_date={status_update_date} payment_proof={payment_proof} shipping_destination={shipping_destination}/>
         )
         })}
         
@@ -65,7 +67,7 @@ const OrdersTable = function() {
     )
   }
 
-  const TableRow = function({order_id, order_method, product_id, quantity, formattedOrderCreationDate, status, status_update_date, payment_proof, shipping_destination}) {
+  const TableRow = function({order_id, order_method, product_id, product_name, quantity, formattedOrderCreationDate, status, status_update_date, payment_proof, shipping_destination}) {
     const [file, setFile] = useState();
 
     const upload = async function(order_id) {
@@ -89,6 +91,7 @@ const OrdersTable = function() {
             <th>{order_id}</th>
             <th>{order_method}</th>
             <th>{product_id}</th>
+            <th>{product_name}</th>
             <th>{quantity}</th>
             <th>{formattedOrderCreationDate}</th>
             <th>{status}</th>
