@@ -96,4 +96,14 @@ async function addPayment(username, order_id, file) {
   return orders;
 }
 
-export { getOrder, purchase, addPayment }
+async function changeStatus(order_id, status) {
+  const approval = await sql`
+  update orders
+  set status = ${status}
+  where order_id = ${order_id}
+  `
+
+  return approval;
+}
+
+export { getOrder, purchase, addPayment, changeStatus}

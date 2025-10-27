@@ -27,4 +27,4 @@ const verifyToken = function(req, res, next) {
   }
 }
 
-export { verifyToken }
+export { verifyToken, verifyEmployee }

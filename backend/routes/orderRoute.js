@@ -1,8 +1,8 @@
 import express from "express"
 import bodyParser from "body-parser";
 import multer from "multer";
-import { verifyToken } from "../middleware/authMiddleware.js"
-import { getOrder, purchase, addPayment } from "../controllers/orderController.js"
+import { verifyToken, verifyEmployee } from "../middleware/authMiddleware.js"
+import { getOrder, purchase, addPayment, changeStatus } from "../controllers/orderController.js"
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -51,6 +51,24 @@ router.post('/payment', verifyToken, upload.single('file'), (req, res) => {
   const username = req.username;
   const orderId = req.get('order_id');
   addPayment(username, orderId, fileName);
+})
+
+// Employees Only
+router.put('/status', verifyEmployee, async(req, res) => {
+  try {
+    const order_id = req.body.order_id;
+    const status = req.body.status;
+    await changeStatus(order_id, status);
+    res.status(200).json({
+      "status": "success",
+      "message": "approval success"
+    })
+  } catch (err) {
+    res.status(500).json({
+      "status": "failed",
+      "message": "approval failed"
+    })
+  }
 })
 
 export default router;
