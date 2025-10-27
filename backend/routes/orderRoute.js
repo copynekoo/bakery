@@ -2,7 +2,7 @@ import express from "express"
 import bodyParser from "body-parser";
 import multer from "multer";
 import { verifyToken, verifyEmployee } from "../middleware/authMiddleware.js"
-import { getOrder, purchase, addPayment, changeStatus } from "../controllers/orderController.js"
+import { getOrder, purchase, addPayment, changeStatus, getAllOrders } from "../controllers/orderController.js"
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -70,5 +70,10 @@ router.put('/status', verifyEmployee, async(req, res) => {
     })
   }
 })
+
+router.get('/all', verifyEmployee, async (req, res) => {
+  const orders = await getAllOrders();
+  res.status(200).json(orders);
+});
 
 export default router;
