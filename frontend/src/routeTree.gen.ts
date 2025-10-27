@@ -15,6 +15,8 @@ import { Route as OrdersRouteImport } from './routes/orders'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as EmployeesIndexRouteImport } from './routes/employees/index'
+import { Route as EmployeesProductsRouteImport } from './routes/employees/products'
+import { Route as EmployeesOrdersRouteImport } from './routes/employees/orders'
 import { Route as EmployeesDashboardRouteImport } from './routes/employees/dashboard'
 
 const RegisterRoute = RegisterRouteImport.update({
@@ -47,6 +49,16 @@ const EmployeesIndexRoute = EmployeesIndexRouteImport.update({
   path: '/employees/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EmployeesProductsRoute = EmployeesProductsRouteImport.update({
+  id: '/employees/products',
+  path: '/employees/products',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EmployeesOrdersRoute = EmployeesOrdersRouteImport.update({
+  id: '/employees/orders',
+  path: '/employees/orders',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const EmployeesDashboardRoute = EmployeesDashboardRouteImport.update({
   id: '/employees/dashboard',
   path: '/employees/dashboard',
@@ -60,6 +72,8 @@ export interface FileRoutesByFullPath {
   '/profile': typeof ProfileRoute
   '/register': typeof RegisterRoute
   '/employees/dashboard': typeof EmployeesDashboardRoute
+  '/employees/orders': typeof EmployeesOrdersRoute
+  '/employees/products': typeof EmployeesProductsRoute
   '/employees': typeof EmployeesIndexRoute
 }
 export interface FileRoutesByTo {
@@ -69,6 +83,8 @@ export interface FileRoutesByTo {
   '/profile': typeof ProfileRoute
   '/register': typeof RegisterRoute
   '/employees/dashboard': typeof EmployeesDashboardRoute
+  '/employees/orders': typeof EmployeesOrdersRoute
+  '/employees/products': typeof EmployeesProductsRoute
   '/employees': typeof EmployeesIndexRoute
 }
 export interface FileRoutesById {
@@ -79,6 +95,8 @@ export interface FileRoutesById {
   '/profile': typeof ProfileRoute
   '/register': typeof RegisterRoute
   '/employees/dashboard': typeof EmployeesDashboardRoute
+  '/employees/orders': typeof EmployeesOrdersRoute
+  '/employees/products': typeof EmployeesProductsRoute
   '/employees/': typeof EmployeesIndexRoute
 }
 export interface FileRouteTypes {
@@ -90,6 +108,8 @@ export interface FileRouteTypes {
     | '/profile'
     | '/register'
     | '/employees/dashboard'
+    | '/employees/orders'
+    | '/employees/products'
     | '/employees'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -99,6 +119,8 @@ export interface FileRouteTypes {
     | '/profile'
     | '/register'
     | '/employees/dashboard'
+    | '/employees/orders'
+    | '/employees/products'
     | '/employees'
   id:
     | '__root__'
@@ -108,6 +130,8 @@ export interface FileRouteTypes {
     | '/profile'
     | '/register'
     | '/employees/dashboard'
+    | '/employees/orders'
+    | '/employees/products'
     | '/employees/'
   fileRoutesById: FileRoutesById
 }
@@ -118,6 +142,8 @@ export interface RootRouteChildren {
   ProfileRoute: typeof ProfileRoute
   RegisterRoute: typeof RegisterRoute
   EmployeesDashboardRoute: typeof EmployeesDashboardRoute
+  EmployeesOrdersRoute: typeof EmployeesOrdersRoute
+  EmployeesProductsRoute: typeof EmployeesProductsRoute
   EmployeesIndexRoute: typeof EmployeesIndexRoute
 }
 
@@ -165,6 +191,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EmployeesIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/employees/products': {
+      id: '/employees/products'
+      path: '/employees/products'
+      fullPath: '/employees/products'
+      preLoaderRoute: typeof EmployeesProductsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/employees/orders': {
+      id: '/employees/orders'
+      path: '/employees/orders'
+      fullPath: '/employees/orders'
+      preLoaderRoute: typeof EmployeesOrdersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/employees/dashboard': {
       id: '/employees/dashboard'
       path: '/employees/dashboard'
@@ -182,6 +222,8 @@ const rootRouteChildren: RootRouteChildren = {
   ProfileRoute: ProfileRoute,
   RegisterRoute: RegisterRoute,
   EmployeesDashboardRoute: EmployeesDashboardRoute,
+  EmployeesOrdersRoute: EmployeesOrdersRoute,
+  EmployeesProductsRoute: EmployeesProductsRoute,
   EmployeesIndexRoute: EmployeesIndexRoute,
 }
 export const routeTree = rootRouteImport
