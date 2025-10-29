@@ -20,15 +20,18 @@ async function getAllOrders() {
   return orders;
 }
 
-async function getOrder(username) {
+async function getOrder(username, sort_by_time="desc") {
   const customerId = await findCustomerId(username);
+  const sortByTime = (sort_by_time === "desc") ? "desc" : "asc";
+
   const orders = await sql`
     select orders.order_id, order_lines.order_method, order_lines.product_id, products.p_name, order_lines.quantity, order_lines.product_price, orders.order_creation_date, orders.status, orders.status_update_date, orders.payment_proof, orders.shipping_destination
     from orders
     join order_lines
     on orders.order_id = order_lines.order_id
     inner join products ON order_lines.product_id = products.p_id
-    where customer_id = ${customerId};
+    where customer_id = ${customerId}
+    order by order_creation_date ${sortByTime === "desc" ? sql`desc` : sql`asc`}
   `
   return orders;
 }
@@ -91,6 +94,11 @@ async function addPayment(username, order_id, file) {
           set status = 'Waiting for approval'
           where customer_id = ${customerId} and order_id = ${order_id};
         `
+    const update_status_date = await sql`
+    update orders
+    set status_update_date = NOW()
+    where customer_id = ${customerId} and order_id = ${order_id};
+    `
   }
 
   const orders = await sql`
@@ -98,6 +106,7 @@ async function addPayment(username, order_id, file) {
     set payment_proof = ${file}
     where customer_id = ${customerId} and order_id = ${order_id};
   `
+
   return orders;
 }
 

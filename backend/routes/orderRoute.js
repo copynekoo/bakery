@@ -24,9 +24,12 @@ const router = express.Router();
 router.use(bodyParser.json());
 
 router.get('/', verifyToken, async (req, res) => {
+  // Parameters
   const format = req.query.format;
+  const sort_by_time = req.query.sort_by_time;
+  //
   const username = req.username;
-  let order = await getOrder(username);
+  let order = await getOrder(username, sort_by_time);
   if (format === 'true'){
     order = reformatOrders(order);
   }
@@ -52,10 +55,22 @@ router.post("/purchase", verifyToken, async (req, res) => {
 });
 
 router.post('/payment', verifyToken, upload.single('file'), (req, res) => {
-  const fileName = req.file.filename;
-  const username = req.username;
-  const orderId = req.get('order_id');
-  addPayment(username, orderId, fileName);
+  try {
+    const uploadedFileName = req.file.filename;
+    const username = req.username;
+    const orderId = req.get('order_id');
+    addPayment(username, orderId, uploadedFileName);
+    res.status(200).json({
+      "status": "success",
+      "message": "File is uploaded",
+      "uploadedFileName": uploadedFileName
+    })
+  } catch (err) {
+    res.status(500).json({
+      "status": "failed",
+      "message": "File upload failed",
+    })
+  }
 })
 
 // Employees Only

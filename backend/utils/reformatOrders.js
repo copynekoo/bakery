@@ -1,16 +1,16 @@
 function reformatOrdersFunctional(originalData) {
-    // Group orders by order_id using reduce
+    // Group orders by order_id using Map to preserve order
     const groupedOrders = originalData.reduce((acc, order) => {
         const orderId = order.order_id;
-        if (!acc[orderId]) {
-            acc[orderId] = [];
+        if (!acc.has(orderId)) {
+            acc.set(orderId, []);
         }
-        acc[orderId].push(order);
+        acc.get(orderId).push(order);
         return acc;
-    }, {});
+    }, new Map());
     
-    // Convert grouped object to array and reformat
-    return Object.entries(groupedOrders).map(([orderId, orderItems]) => {
+    // Convert Map to array and reformat - this preserves insertion order
+    return Array.from(groupedOrders).map(([orderId, orderItems]) => {
         const firstItem = orderItems[0];
         
         const orderData = {
@@ -37,49 +37,5 @@ function reformatOrdersFunctional(originalData) {
         return orderData;
     });
 }
-
-// Usage
-
-const mockupData = [
-    {
-      "order_id": "47",
-      "order_method": "Pre Order",
-      "product_id": "1",
-      "p_name": "Milk Bread",
-      "quantity": "5",
-      "product_price": "20",
-      "order_creation_date": "2025-10-29T13:22:16.684Z",
-      "status": "Waiting for payment",
-      "status_update_date": null,
-      "payment_proof": null,
-      "shipping_destination": "Bangkok Thailand"
-    },
-    {
-      "order_id": "48",
-      "order_method": "Pre Order",
-      "product_id": "4",
-      "p_name": "Chocolate Cake",
-      "quantity": "10",
-      "product_price": "60",
-      "order_creation_date": "2025-10-29T13:23:16.383Z",
-      "status": "Waiting for payment",
-      "status_update_date": null,
-      "payment_proof": null,
-      "shipping_destination": "Bangkok Thailand"
-    },
-    {
-      "order_id": "48",
-      "order_method": "Pre Order",
-      "product_id": "2",
-      "p_name": "White Bread",
-      "quantity": "5",
-      "product_price": "30",
-      "order_creation_date": "2025-10-29T13:23:16.383Z",
-      "status": "Waiting for payment",
-      "status_update_date": null,
-      "payment_proof": null,
-      "shipping_destination": "Bangkok Thailand"
-    }
-];
 
 export default reformatOrdersFunctional;
