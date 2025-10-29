@@ -27,9 +27,10 @@ router.get('/', verifyToken, async (req, res) => {
   // Parameters
   const format = req.query.format;
   const sort_by_time = req.query.sort_by_time;
+  const sort_by_status = req.query.sort_by_status;
   //
   const username = req.username;
-  let order = await getOrder(username, sort_by_time);
+  let order = await getOrder(username, sort_by_time, sort_by_status);
   if (format === 'true'){
     order = reformatOrders(order);
   }

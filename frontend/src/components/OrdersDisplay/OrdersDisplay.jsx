@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import axios from "axios";
 import "./OrdersDisplay.css";
+import Select from 'react-select';
 
 const calculatePrice = function(order){
   let sum_price = 0;
@@ -27,10 +28,24 @@ const fetchOrdersData = async function(){
   return response.data;
 }
 
+const StatusQueryOptions = [
+  { value: 'all', label: 'All' },
+  { value: 'need_pay', label: 'Waiting for payment' },
+  { value: 'need_approval', label: 'Waiting for approval' },
+  { value: 'approved', label: 'Approved'},
+  { value: 'delivered', label: 'Delivered'}
+];
+
+const DirectionQueryOptions = [
+  { value: 'desc', label: 'Latest' },
+  { value: 'asc', label: 'Oldest' }
+];
+
 function OrdersTable() {
   const [data, setData] = useState([]);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
-  const [selectedStatusQuery, setSelectedStatusQuery] = useState('');
+  const [selectedStatusQuery, setSelectedStatusQuery] = useState({ value: 'all', label: 'All' });
+  const [selectedTimeQuery, setSelectedTimeQuery] = useState({ value: 'desc', label: 'Latest' });
   const fileInputRef = useRef(null);
 
   const upload = async function(order_id, file) {
@@ -66,15 +81,35 @@ function OrdersTable() {
   useEffect(() => {
     axios.get(import.meta.env.VITE_API_DOMAIN + "/api/orders",
     {
-      params: { format: 'true'},
+      params: { format: 'true',
+        sort_by_time: selectedTimeQuery.value,
+        sort_by_status: selectedStatusQuery.label,
+      },
       withCredentials: true
     }).then(response => setData(response.data));
-  }, [refreshTrigger]);
+  }, [refreshTrigger, selectedStatusQuery, selectedTimeQuery]);
 
   return (
     <div className="orders-container">
       <h1 className="orders-title">Orders</h1>
+      <div className="dropdown">
+        <span>Status        
+          <Select
+          defaultValue={selectedStatusQuery}
+          onChange={setSelectedStatusQuery}
+          options={StatusQueryOptions}
+          />
+        </span>
+        <span>Sort by Time
+          <Select
+          defaultValue={selectedTimeQuery}
+          onChange={setSelectedTimeQuery}
+          options={DirectionQueryOptions}
+          />
+        </span>
 
+      </div>
+  
       <div className="orders-list">
         {data.map((order) => {
           const orderDate = new Date(order.order_creation_date).toLocaleString("en-EN", {

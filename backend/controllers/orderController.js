@@ -20,7 +20,7 @@ async function getAllOrders() {
   return orders;
 }
 
-async function getOrder(username, sort_by_time="desc") {
+async function getOrder(username, sort_by_time="desc", sort_by_status="All") {
   const customerId = await findCustomerId(username);
   const sortByTime = (sort_by_time === "desc") ? "desc" : "asc";
 
@@ -30,7 +30,7 @@ async function getOrder(username, sort_by_time="desc") {
     join order_lines
     on orders.order_id = order_lines.order_id
     inner join products ON order_lines.product_id = products.p_id
-    where customer_id = ${customerId}
+    where customer_id = ${customerId} ${sort_by_status === 'All' ? sql`` : sql`and status = ${sort_by_status}`}
     order by order_creation_date ${sortByTime === "desc" ? sql`desc` : sql`asc`}
   `
   return orders;

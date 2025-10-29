@@ -148,3 +148,11 @@
   gap: 8px; /* Space between the stacked items */
   padding: 20px;
 }
+
+.dropdown {
+  display: grid;
+  grid-template-columns: 50% 50%;
+  gap: 128px;
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+}
