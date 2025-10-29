@@ -1,6 +1,6 @@
 import sql from '../config/db.js'
 import { findCustomerId } from './profileController.js'
-import { getProductStock } from './productItemController.js';
+import { getProductStock, getProductPrice } from './productItemController.js';
 
 async function getNextOrderId() {
   const nextOrderId = await sql`
@@ -23,7 +23,7 @@ async function getAllOrders() {
 async function getOrder(username) {
   const customerId = await findCustomerId(username);
   const orders = await sql`
-    select orders.order_id, order_lines.order_method, order_lines.product_id, products.p_name, order_lines.quantity, orders.order_creation_date, orders.status, orders.status_update_date, orders.payment_proof, orders.shipping_destination
+    select orders.order_id, order_lines.order_method, order_lines.product_id, products.p_name, order_lines.quantity, order_lines.product_price, orders.order_creation_date, orders.status, orders.status_update_date, orders.payment_proof, orders.shipping_destination
     from orders
     join order_lines
     on orders.order_id = order_lines.order_id
@@ -50,12 +50,13 @@ async function purchase(username, data) {
       const order_method = data[key]['order_method'];
       const quantity = data[key]['quantity'];
       const productStock = await getProductStock(product_id);
+      const productPrice = await getProductPrice(product_id);
       if ((order_method != 'Buy Now') && (order_method != 'Pre Order')) return; // Check if buy method is valid
       if ((order_method == 'Buy Now') && (productStock-quantity < 0)) return; // If using buy now method, then it should has sufficient product stock
       
       const order_lines = await sql`
-      insert into order_lines (order_id, product_id, quantity, order_method)
-      values (${orderId}, ${product_id}, ${quantity}, ${order_method})
+      insert into order_lines (order_id, product_id, quantity, order_method, product_price)
+      values (${orderId}, ${product_id}, ${quantity}, ${order_method}, ${productPrice})
       `
     }
   } catch (error) {

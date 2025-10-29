@@ -8,5 +8,6 @@ export const Route = createFileRoute('/employees/products')({
 function RouteComponent() {
   return <>
     <NavigationBar/>
+    <h1 className="text-3xl font-bold underline">      Hello world!    </h1>
   </>
 }

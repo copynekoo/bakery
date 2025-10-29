@@ -23,4 +23,14 @@ async function getProductStock(product_id) {
   return productItems[0]['remaining_item'];
 }
 
-export { getAllProductItems, getProductStock }
+async function getProductPrice(product_id) {
+  const productItems = await sql`
+    select
+      products.p_price
+    from products
+    where products.p_id = ${product_id};
+  `
+  return productItems[0]['p_price'];
+}
+
+export { getAllProductItems, getProductStock, getProductPrice }
