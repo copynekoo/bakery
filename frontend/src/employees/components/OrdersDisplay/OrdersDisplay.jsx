@@ -1,7 +1,17 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState} from 'react';
 import axios from "axios";
+import { createPortal } from 'react-dom';
 import "./OrdersDisplay.css";
 import Select from 'react-select';
+import OrdersDisplayPopUp from '../OrdersDisplayPopUp/OrdersDisplayPopUp';
+
+const statusConfig = {
+  "Delivered": { class: "status-delivered", display: "Delivered" },
+  "Waiting for approval": { class: "status-waiting", display: "Awaiting Approval" },
+  "Processing": { class: "status-processing", display: "Processing" },
+  "Shipped": { class: "status-shipped", display: "Shipped" },
+  "Cancelled": { class: "status-cancelled", display: "Cancelled" }
+};
 
 const calculatePrice = function(order){
   let sum_price = 0;
@@ -13,19 +23,6 @@ const calculatePrice = function(order){
     sum_price += totalPrice;
   }
   return sum_price;
-}
-
-const fetchOrdersData = async function(){
-  const response = await axios.get(import.meta.env.VITE_API_DOMAIN + "/api/orders",
-    {
-      params: {
-        format: 'true',
-        sort_by_time: 'desc',
-      },
-      withCredentials: true
-    });
-
-  return response.data;
 }
 
 const StatusQueryOptions = [
@@ -47,61 +44,31 @@ function OrdersTable() {
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [selectedStatusQuery, setSelectedStatusQuery] = useState({ value: 'all', label: 'All' });
   const [selectedTimeQuery, setSelectedTimeQuery] = useState({ value: 'desc', label: 'Latest' });
-  const fileInputRef = useRef(null);
+  const [isPopUpOpen, setIsPopUpOpen] = useState(false);
+  const [isCancel, setIsCancel] = useState(false);
+  const [PopUpData, setPopUpData] = useState([]);
 
-  const cancelOrder = async function(order_id){
-  const response = await axios.put(import.meta.env.VITE_API_DOMAIN + "/api/orders/",
-    {
-      "order_id": order_id
-    },
-    {
-      withCredentials: true
-    }
-  );
-
-  return response;
-}
-
-  const upload = async function(order_id, file) {
-    const formData = new FormData();
-    formData.append('file', file);
-    const response = await axios({
-      method: "post",
-      url: import.meta.env.VITE_API_DOMAIN + '/' + 'api' + '/' + 'orders' + '/' + 'payment',
-      withCredentials: true,
-      headers: {'order_id': order_id},
-      data: formData,
-      })
-    .then(res => {
-      setRefreshTrigger(prev => prev+1);
-    })
-    .catch(er => console.log(er))
+  const onClickPopUp = function(data) {
+    data.sum_price = calculatePrice(data);
+    setPopUpData(data);
+    setIsPopUpOpen(true);
   }
 
-  const handleButtonClick = (orderId) => {
-    fileInputRef.current?.setAttribute('data-order-id', orderId);
-    fileInputRef.current?.click();
-  };
-
-  const handleFileChange = function(event) {
-    const orderId = event.target.getAttribute('data-order-id');
-    const file = event.target.files[0];
-    if (file) {
-      console.log('Selected file:', file.name);
-      upload(orderId, file);
-    }
-  };
-
-  const onCancelPopUp = function(order){
-    const order_id = order.order_id;
-    let text;
-    if (confirm("Are you sure to cancel Order #"+order_id+"?") == true) {
-      const response = cancelOrder(order_id).then(() => setRefreshTrigger(prev => prev+1));
-    }
+  const onClosePopUp = function() {
+    setIsCancel(false);
+    setIsPopUpOpen(false);
   }
+
+  const onCancelPopUp = function(data) {
+    setIsCancel(true);
+    onClickPopUp(data);
+  }
+  const triggerRefresh = () => {
+    setRefreshTrigger(prev => prev + 1);
+  };
 
   useEffect(() => {
-    axios.get(import.meta.env.VITE_API_DOMAIN + "/api/orders",
+    axios.get(import.meta.env.VITE_API_DOMAIN + "/api/orders/all",
     {
       params: { format: 'true',
         sort_by_time: selectedTimeQuery.value,
@@ -131,7 +98,9 @@ function OrdersTable() {
         </span>
 
       </div>
-  
+
+      {isPopUpOpen && createPortal(<OrdersDisplayPopUp onClose={onClosePopUp} onRefresh={triggerRefresh} data={PopUpData} isCancel={isCancel}/>, document.body)}
+
       <div className="orders-list">
         {data.map((order) => {
           const orderDate = new Date(order.order_creation_date).toLocaleString("en-EN", {
@@ -139,8 +108,6 @@ function OrdersTable() {
             timeStyle: "short",
           });
           
-
-
           const orderItems = Object.values(order.order_lines);
           const payment_proof_link = import.meta.env.VITE_API_DOMAIN + "/public/uploads/" + order.payment_proof
           const itemCount = orderItems.length;
@@ -155,10 +122,10 @@ function OrdersTable() {
 
           return (
             <div key={order.order_id} className="order-card">
-              {/* Header */}
               <div className="order-header">
                 <div className="order-info">
                   <h2>Order #{order.order_id}</h2>
+                  <h3>Customer: {order.customer_name} ({order.customer_id})</h3>
                   <p className="order-date lilgray">Created: {orderDate}</p>
                   {orderUpdateDate && (<p className="order-date lilgray">Updated: {orderUpdateDate}</p>)}
                   <p className="order-item-count">
@@ -170,18 +137,16 @@ function OrdersTable() {
                 </div>
 
                 <div className="order-status-bar">
-                  <span
+                    <span
                     className={`order-status ${
                       order.status === "Delivered" ? "status-delivered" : "status-pending"
                     }`}
                   >
-                    {order.status === "Waiting for approval"
-                      ? "Waiting for approval"
-                      : order.status}
+                    
+                    {order.status === "Waiting for approval" ? "Waiting for approval" : order.status}
                   </span>
                   <div className="lilgray">{order.tracking_number}</div>
                 </div>
-
               </div>
 
               {/* Items */}
@@ -199,38 +164,30 @@ function OrdersTable() {
               {/* Footer */}
               <div className="order-footer">
                 <p className="order-price">{calculatePrice(order)} Baht</p>
+                
 
                 {/* Right Side */}
                 <div>
-
-                  {(order.status === "Waiting for payment") && (
+                  {(order.status !== "Cancelled" && order.status !== "Delivered" ) && (
                     <a className="cancel-order" onClick={() => onCancelPopUp(order)}>Cancel Order</a>
-                  )}
-
-                  <input
-                    type="file"
-                    accept="image/*"
-                    ref={fileInputRef}
-                    onChange={handleFileChange}
-                    style={{ display: 'none' }}
-                  />
-                  {!order.payment_proof && (
-                    <button 
-                      type="button"
-                      className="send-payment-slip-btn"
-                      onClick={() => handleButtonClick(order.order_id)}>
-                      Upload payment slip
-                    </button>
                   )}
                   {order.payment_proof && (
                     <a href={payment_proof_link} className="paymentProof">View payment proof</a>
                   )}
-                  {order.payment_proof && (
+                  {order.status === "Waiting for approval" && (
                     <button 
                       type="button"
-                      className="send-payment-slip-btn resend-payment-slip-btn"
-                      onClick={() => handleButtonClick(order.order_id)}>
-                      Reupload payment slip
+                      className="resend-payment-slip-btn"
+                      onClick={() => onClickPopUp(order)}>
+                      Approve Order
+                    </button>
+                  )}
+                  {order.status === "Approved" && (
+                    <button 
+                      type="button"
+                      className="send-payment-slip-btn"
+                      onClick={() => onClickPopUp(order)}>
+                      Deliver Order
                     </button>
                   )}
                 </div>

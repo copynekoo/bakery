@@ -9,14 +9,20 @@ async function getNextOrderId() {
   return nextOrderId;
 }
 
-async function getAllOrders() {
+async function getAllOrders(sort_by_time="desc", sort_by_status="All") {
+  const sortByTime = (sort_by_time === "desc") ? "desc" : "asc";
+  
   const orders = await sql`
-    select orders.order_id, orders.customer_id, order_lines.order_method, order_lines.product_id, products.p_name, order_lines.quantity, orders.order_creation_date, orders.status, orders.status_update_date, orders.payment_proof, orders.shipping_destination
+    select orders.order_id, orders.customer_id, concat(customers.firstname,' ',customers.lastname) as customer_name, orders.tracking_number, order_lines.order_method, order_lines.product_id, products.p_name, order_lines.quantity, order_lines.product_price, orders.order_creation_date, orders.status, orders.status_update_date, orders.payment_proof, orders.shipping_destination
     from orders
     join order_lines
     on orders.order_id = order_lines.order_id
-    inner join products ON order_lines.product_id = products.p_id
+    join products ON order_lines.product_id = products.p_id
+    join customers ON orders.customer_id = customers.c_id
+    ${sort_by_status === 'All' ? sql`` : sql`and status = ${sort_by_status}`}
+    order by order_creation_date ${sortByTime === "desc" ? sql`desc` : sql`asc`}
   `
+
   return orders;
 }
 
@@ -25,7 +31,7 @@ async function getOrder(username, sort_by_time="desc", sort_by_status="All") {
   const sortByTime = (sort_by_time === "desc") ? "desc" : "asc";
 
   const orders = await sql`
-    select orders.order_id, order_lines.order_method, order_lines.product_id, products.p_name, order_lines.quantity, order_lines.product_price, orders.order_creation_date, orders.status, orders.status_update_date, orders.payment_proof, orders.shipping_destination
+    select orders.order_id, order_lines.order_method, order_lines.product_id, orders.tracking_number, products.p_name, order_lines.quantity, order_lines.product_price, orders.order_creation_date, orders.status, orders.status_update_date, orders.payment_proof, orders.shipping_destination
     from orders
     join order_lines
     on orders.order_id = order_lines.order_id
@@ -39,7 +45,8 @@ async function getOrder(username, sort_by_time="desc", sort_by_status="All") {
 async function purchase(username, data) {
   try {
     const customerId = await findCustomerId(username);
-    const shippingdestination = data[0]['shippingdestination'];
+    const shippingdestination = data[0].shippingdestination;
+    const order_lines = data[0].order_lines;
     const nextOrderId = await getNextOrderId();
     const orderId = nextOrderId[0]['nextval'];
 
@@ -48,16 +55,17 @@ async function purchase(username, data) {
     values (${orderId}, ${customerId}, DEFAULT, 'Waiting for payment', null, null, ${shippingdestination})
     `
     
-    for (const key in data) {
-      const product_id = data[key]['product_id'];
-      const order_method = data[key]['order_method'];
-      const quantity = data[key]['quantity'];
+    for (const orderKey in order_lines) {
+      const order = order_lines[orderKey];
+      const product_id = order.product_id;
+      const order_method = order.order_method;
+      const quantity = order.quantity;
       const productStock = await getProductStock(product_id);
       const productPrice = await getProductPrice(product_id);
       if ((order_method != 'Buy Now') && (order_method != 'Pre Order')) return; // Check if buy method is valid
       if ((order_method == 'Buy Now') && (productStock-quantity < 0)) return; // If using buy now method, then it should has sufficient product stock
       
-      const order_lines = await sql`
+      await sql`
       insert into order_lines (order_id, product_id, quantity, order_method, product_price)
       values (${orderId}, ${product_id}, ${quantity}, ${order_method}, ${productPrice})
       `
@@ -110,14 +118,70 @@ async function addPayment(username, order_id, file) {
   return orders;
 }
 
-async function changeStatus(order_id, status) {
-  const approval = await sql`
+async function setStatus(order_id, status) {
+  const changeStatus = await sql`
   update orders
   set status = ${status}
   where order_id = ${order_id}
   `
 
-  return approval;
+  return changeStatus;
 }
 
-export { getOrder, getAllOrders, purchase, addPayment, changeStatus}
+async function setTrackingNumber(order_id, tracking_number) {
+  const changeStatus = await sql`
+  update orders
+  set tracking_number = ${tracking_number}
+  where order_id = ${order_id}
+  `
+
+  return changeStatus;
+}
+
+async function changeStatus(order_id, status, tracking_number=null) {
+  const isValid = await validateApprove(order_id, status);
+  if (isValid){
+    setStatus(order_id, status);
+    if (tracking_number){
+      setTrackingNumber(order_id, tracking_number);
+    }
+    return true;
+  }
+  return false;
+}
+
+async function cancelOrder(username, order_id) {
+  const customerId = await findCustomerId(username);
+  let isValid=false;
+  const Status = await getStatus(order_id);
+  if ((Status === "Waiting for payment")){ isValid=true; };
+    if (isValid){
+    const changeStatus = await sql`
+      update orders
+      set status = 'Cancelled'
+      where order_id = ${order_id} and customer_id = ${customerId}
+    `
+    return changeStatus;
+  }
+  return false;
+}
+
+async function getStatus(order_id) {
+  const changeStatus = await sql`
+  select status
+  from orders
+  where order_id = ${order_id}
+  `
+
+  return changeStatus[0].status;
+}
+
+async function validateApprove(order_id, status) {
+  const Status = await getStatus(order_id);
+  if ((Status === "Waiting for approval") && (status === "Approved")){ return true };
+  if ((Status === "Approved") && (status === "Delivered")){ return true };
+  if ((Status !== "Delivered") && (status === "Cancelled"))   { return true };
+  return false;  
+}
+
+export { getOrder, getAllOrders, purchase, addPayment, getStatus, changeStatus, cancelOrder }

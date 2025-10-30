@@ -2,8 +2,8 @@ import express from "express"
 import bodyParser from "body-parser";
 import multer from "multer";
 import { verifyToken, verifyEmployee } from "../middleware/authMiddleware.js"
-import { getOrder, purchase, addPayment, changeStatus, getAllOrders } from "../controllers/orderController.js"
-import reformatOrders from "../utils/reformatOrders.js"
+import { getOrder, purchase, addPayment, changeStatus, getStatus, getAllOrders, cancelOrder } from "../controllers/orderController.js"
+import { reformatOrders, reformatAllOrders } from "../utils/reformatOrders.js"
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -37,10 +37,40 @@ router.get('/', verifyToken, async (req, res) => {
   res.status(200).json(order);
 });
 
+router.put('/', verifyToken, async(req, res) => {
+  try {
+    const order_id = req.body.order_id;
+    const username = req.username;
+    const valid = await cancelOrder(username, order_id);
+    if (valid === false) { throw Error("Not valid") }
+    res.status(200).json({
+      "status": "success",
+      "message": "change status success"
+    })
+  } catch (err) {
+    res.status(500).json({
+      "status": "failed",
+      "message": "change status unvalid"
+    })
+  }
+})
+
 router.post("/purchase", verifyToken, async (req, res) => {
   try {
     const username = req.username;
     const data = req.body;
+    const order_lines = data[0].order_lines;
+    const shippingdestination = data[0].shippingdestination;
+    if (!shippingdestination.trim()){
+      throw new Error("No shipping destination specified");
+    }
+    for (const orderKey in order_lines) {
+      const order = order_lines[orderKey];
+      const quantity = order.quantity;
+      if (quantity <= 0){
+        throw new Error("0 is not permitted")
+      }
+    }
     const purchased = await purchase(username, data);
     res.status(200).json({
       "status": "success",
@@ -50,7 +80,7 @@ router.post("/purchase", verifyToken, async (req, res) => {
   } catch (erorr) {
     res.status(500).json({
       "status": "failed",
-      "message": "preorder failed"
+      "message": "preorder failed",
     })
   }
 });
@@ -75,26 +105,56 @@ router.post('/payment', verifyToken, upload.single('file'), (req, res) => {
 })
 
 // Employees Only
-router.put('/status', verifyEmployee, async(req, res) => {
+router.get('/status', verifyEmployee, async(req, res) => {
   try {
     const order_id = req.body.order_id;
-    const status = req.body.status;
-    await changeStatus(order_id, status);
+    const get_status = await getStatus(order_id);
     res.status(200).json({
-      "status": "success",
-      "message": "approval success"
+      "status": "get status success",
+      "return_status": get_status
     })
   } catch (err) {
     res.status(500).json({
       "status": "failed",
-      "message": "approval failed"
+      "message": "get status failed"
+    })
+  }
+})
+
+router.put('/status', verifyEmployee, async(req, res) => {
+  try {
+    const order_id = req.body.order_id;
+    const status = req.body.status;
+    const tracking_number = req.body.tracking_number;
+    const valid = await changeStatus(order_id, status, tracking_number);
+    if (valid === false) { throw Error("Not valid") }
+    res.status(200).json({
+      "status": "success",
+      "message": "change status success"
+    })
+  } catch (err) {
+    res.status(500).json({
+      "status": "failed",
+      "message": "change status unvalid"
     })
   }
 })
 
 router.get('/all', verifyEmployee, async (req, res) => {
-  const orders = await getAllOrders();
-  res.status(200).json(orders);
+  try {
+    // Parameters
+    const format = req.query.format;
+    const sort_by_time = req.query.sort_by_time;
+    const sort_by_status = req.query.sort_by_status;
+    //
+    let orders = await getAllOrders(sort_by_time, sort_by_status);
+    if (format === 'true'){
+      orders = reformatAllOrders(orders);
+    }
+    res.status(200).json(orders);
+  } catch (error) {
+    res.status(500);
+  }
 });
 
 export default router;

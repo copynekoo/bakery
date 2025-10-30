@@ -115,7 +115,7 @@
 
 .resend-payment-slip-btn {
   color: white;
-  padding: 0.5rem;
+  padding: 0.5rem 1rem 0.5rem 1rem;
   border-radius: 0.75rem;
   background-color: #4295f1;
   font-weight: 600;
@@ -155,10 +155,6 @@
   gap: 128px;
   margin-top: 1.5rem;
   margin-bottom: 1.5rem;
-}
-
-.lilgray {
-  color: #a9a9a9;
 }
 
 .cancel-order {

@@ -2,7 +2,7 @@ import "./PreOrderPopUp.css"
 import { useState, useEffect } from "react"
 import axios from "axios"
 
-const PurchasePopUp = function({id, name, price, remainingItem, onClose}) {
+const PurchasePopUp = function({id, name, price, onClose}) {
   const [preOrderQuantity, setPreOrderQuantity] = useState(1);
   const [defaultShippingDestination, setDefaultShippingDestination] = useState();
   const [customShippingDestination, setCustomShippingDestination] = useState("");
@@ -10,10 +10,14 @@ const PurchasePopUp = function({id, name, price, remainingItem, onClose}) {
   const purchase = async function(p_id, method, quantity, shippingdestination) {
   try {
     const requestBody = 
-    [{ 
-      product_id: p_id,
-      order_method: method,
-      quantity: quantity,
+    [{
+      "order_lines": { 
+        "1": {
+          product_id: p_id,
+          order_method: method,
+          quantity: quantity,
+        }
+      },
       shippingdestination: shippingdestination
     }];
     const response = await axios({
