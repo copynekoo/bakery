@@ -227,7 +227,7 @@ function OrdersTable() {
                   {order.payment_proof && (
                     <a href={payment_proof_link} className="paymentProof">View payment proof</a>
                   )}
-                  {(order.payment_proof && order.status !== "Cancelled" && order.status !== "Delivered") && (
+                  {(order.payment_proof && (order.status === "Waiting for payment" || order.status === "Waiting for approval")) && (
                     <button 
                       type="button"
                       className="send-payment-slip-btn resend-payment-slip-btn"

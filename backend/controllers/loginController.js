@@ -10,8 +10,4 @@ async function findUser(username) {
   return found;
 }
 
-async function login(req) {
-
-}
-
-export { findUser, login }
+export { findUser }

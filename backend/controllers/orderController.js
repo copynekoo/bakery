@@ -160,6 +160,12 @@ async function setStatus(order_id, status) {
   where order_id = ${order_id}
   `
 
+  const updateStatusTime = await sql`
+  update orders
+  set status_update_date = NOW()
+  where order_id = ${order_id}
+  `
+
   return changeStatus;
 }
 
