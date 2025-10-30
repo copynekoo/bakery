@@ -87,3 +87,25 @@
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
+
+.resend-payment-slip-btn {
+  color: white;
+  padding: 0.75rem;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+  border-radius: 0.75rem;
+  background-color: #4295f1;
+  max-width: 50%;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+}
+
+.resend-payment-slip-btn:hover {
+  background-color: #57a1f2;
+}
+
+.center {
+  display: flex;
+  justify-content: center;
+}

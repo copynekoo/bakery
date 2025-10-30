@@ -19,8 +19,12 @@ productRouter.post("/", verifyEmployee, async (req, res) => {
     const product_name = data.product_name;
     const product_category = data.product_category;
     const product_price = data.product_price;
-    insertProduct(product_id, product_name, product_category, product_price);
-    res.status(200).json({"success": "successfully added product"})
+    console.log(data);
+    const isSuccessful = insertProduct(product_id, product_name, product_category, product_price);
+    if (isSuccessful){
+      res.status(200).json({"success": "successfully added product"})
+    }
+    throw Error("Unsucessful insert product")
   } catch (error) { 
     res.status(500).json({"failed": "failed to add product"})
   }

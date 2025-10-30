@@ -41,15 +41,18 @@ function ProductTable() {
   const [refreshTrigger, setRefreshTrigger] = React.useState(0);
   const [globalFilter, setGlobalFilter] = React.useState('');
   const [isPopUpOpen, setIsPopUpOpen] = React.useState(false);
+  const [isModifyPopUpOpen, setIsModifyPopUpOpen] = React.useState(false);
   const [popUpData, setPopUpData] = React.useState([]);
 
   const onClickPopUp = function(data, method) {
     setPopUpData(data);
     if (method === "add") setIsPopUpOpen(true);
+    if (method === "modify") setIsModifyPopUpOpen(false);
   }
 
   const onClosePopUp = function() {
     setIsPopUpOpen(false);
+    setIsModifyPopUpOpen(false);
   }
 
   const triggerRefresh = () => {
@@ -87,6 +90,7 @@ function ProductTable() {
         placeholder="Search all columns..."
       />
       {isPopUpOpen && createPortal(<ProductsTablePopUp onClose={onClosePopUp} onRefresh={triggerRefresh} data={popUpData}/>, document.body)}
+      {isModifyPopUpOpen && createPortal(<ProductsTablePopUp onClose={onClosePopUp} onRefresh={triggerRefresh} data={popUpData}/>, document.body)}
       <button onClick={() => onClickPopUp(popUpData, "add")}>Add Product</button>
       <table>
         <thead>

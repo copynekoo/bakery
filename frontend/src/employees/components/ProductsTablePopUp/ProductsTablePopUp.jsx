@@ -6,7 +6,7 @@ const addProduct = async function(product_id, product_name, product_category, pr
   const response = await axios.post(import.meta.env.VITE_API_DOMAIN + "/api/product/",
     {
       "product_id": product_id,
-      "produt_name": product_name,
+      "product_name": product_name,
       "product_category": product_category,
       "product_price": product_price
     },
@@ -14,7 +14,7 @@ const addProduct = async function(product_id, product_name, product_category, pr
       withCredentials: true
     }
   );
-
+  console.log(response);
   return response;
 }
 
@@ -23,6 +23,20 @@ const ProductsTablePopUp = function({onClose, onRefresh, data}) {
   const [productName, setProductName] = useState("");
   const [productCategory, setProductCategory] = useState("");
   const [productPrice, setProductPrice] = useState("");
+
+  const handleAddProduct = async() => {
+    try {
+      const response = await addProduct(productId, productName, productCategory, productPrice);
+      if (response.status === 200) {
+        onRefresh();
+        onClose();
+      }
+    } catch (error) {
+      alert("Unexpected Error: Please try again.")
+      onRefresh();
+      onClose();
+    }
+  }
 
   return (
     <div className="modal">
@@ -72,6 +86,15 @@ const ProductsTablePopUp = function({onClose, onRefresh, data}) {
                   className="textfield-input"
             />
           </p>
+
+        <p className="center">
+          <button 
+            type="button"
+            className="resend-payment-slip-btn big-font-btn"
+            onClick={handleAddProduct}>
+            Add Product
+          </button>
+        </p>
 
         </div>
       </div>
