@@ -1,5 +1,4 @@
 import { createFileRoute } from '@tanstack/react-router'
-import OrdersTable from "../components/OrdersTable/OrdersTable.jsx"
 import OrdersDisplay from "../components/OrdersDisplay/OrdersDisplay.jsx"
 import NavigationBar from '../components/NavigationBar/NavigationBar.jsx'
 

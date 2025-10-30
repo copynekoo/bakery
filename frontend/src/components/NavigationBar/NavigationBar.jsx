@@ -6,6 +6,7 @@ const NavigationBar = function() {
     <ul className="navBar">
       <li><Link to="/" className="[&.active]:font-bold">Products</Link></li>
       <li><Link to="/orders" className="[&.active]:font-bold">Orders</Link></li>
+      <li><Link to="/cart" className="[&.active]:font-bold">Shopping Cart</Link></li>
       <li><Link to="/profile" className="[&.active]:font-bold">Profile</Link></li>
     </ul>
   )
