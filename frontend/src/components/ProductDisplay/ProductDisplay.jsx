@@ -6,7 +6,6 @@ import { snake_case_string } from '../../function/camelCaseToSnakeCase.js'
 
 const ProductDisplay = function() {
   const [data, setData] = useState([]);
-  const [stockFilter, setStockFilter] = useState('all');
   const [categories, setCategories] = useState([]);
   const [categoryFilter, setCategoryFilter] = useState('all');
   
@@ -24,7 +23,7 @@ const ProductDisplay = function() {
       .get(import.meta.env.VITE_API_DOMAIN + "/api/product/categories")
       .then((response) => {
         const fetchedCategories = response.data
-          .map((category) => category.categories)
+          .map((category) => category.p_category)
           .filter((category) => Boolean(category));
         const uniqueCategories = [...new Set(fetchedCategories)];
         setCategories(uniqueCategories);
@@ -33,33 +32,15 @@ const ProductDisplay = function() {
 
   const filteredProducts = useMemo(() => {
     return data.filter((product) => {
-      const remainingItem = product.remaining_item ?? 0;
-      const matchesStock = (() => {
-        if (stockFilter === 'all') return true;
-        if (stockFilter === 'inStock') return remainingItem > 0;
-        return remainingItem <= 0;
-      })();
       const matchesCategory =
         categoryFilter === 'all' ? true : product.p_category === categoryFilter;
-      return matchesStock && matchesCategory;
+      return matchesCategory;
     });
-  }, [data, stockFilter, categoryFilter]);
+  }, [data, categoryFilter]);
 
   return (
     <>
       <div className="productFilters">
-        <div className="productFilter">
-          <label htmlFor="stockFilter">Stock:</label>
-          <select
-            id="stockFilter"
-            value={stockFilter}
-            onChange={(event) => setStockFilter(event.target.value)}
-          >
-            <option value="all">All</option>
-            <option value="inStock">In Stock</option>
-            <option value="outOfStock">Out of Stock</option>
-          </select>
-        </div>
         <div className="productFilter">
           <label htmlFor="categoryFilter">Category:</label>
           <select

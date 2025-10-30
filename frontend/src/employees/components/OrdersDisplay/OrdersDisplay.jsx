@@ -248,7 +248,7 @@ function OrdersTable() {
                     <a href={payment_proof_link} className="paymentProof">View payment proof</a>
                   )}
                   {order.status === "Waiting for approval" && (
-                    <button 
+                    <button
                       type="button"
                       className="resend-payment-slip-btn"
                       onClick={() => onClickPopUp(order)}>
