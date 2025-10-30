@@ -31,11 +31,11 @@ async function insertProduct(product_id, product_name, product_category, product
   }
 }
 
-async function updateProduct(product_id, product_name, product_category, product_price) {
+async function updateProduct(product_id, product_name, product_category, product_price, product_active_sale) {
   try {
     const product = await sql`
     update products
-    set p_name=${product_name}, p_category=${product_category}, p_price=${product_price}
+    set p_name=${product_name}, p_category=${product_category}, p_price=${product_price}, active_sale=${product_active_sale}
     where p_id = ${product_id}
   `
     return true;
@@ -45,4 +45,17 @@ async function updateProduct(product_id, product_name, product_category, product
   }
 }
 
-export { getAllProducts, getAllProductCategories, insertProduct, updateProduct }
+async function deleteProduct(product_id) {
+  try {
+    const deleteProduct = await sql`
+    delete from products
+    where p_id = ${product_id}
+    `
+    return true;
+  } catch (error) {
+    console.error("Error while deleting product");
+    return false;
+  }
+}
+
+export { getAllProducts, getAllProductCategories, insertProduct, updateProduct, deleteProduct }

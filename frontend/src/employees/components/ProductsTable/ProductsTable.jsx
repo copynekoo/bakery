@@ -44,6 +44,10 @@ function ProductTable() {
       header: 'Price',
     },
     {
+      accessorKey: 'active_sale',
+      header: 'On Sale',
+    },
+    {
       id: 'actions',
       header: 'Actions',
       cell: ({ row }) => (
@@ -75,7 +79,7 @@ function ProductTable() {
   React.useEffect(() => {
     // Make GET request to fetch data
         axios
-            .get(import.meta.env.VITE_API_DOMAIN + "/api/product")
+            .get(import.meta.env.VITE_API_DOMAIN + "/api/productItems")
             .then((response) => {
             setData(response.data);
           });

@@ -3,10 +3,18 @@ import sql from '../config/db.js'
 async function getAllProductItems() {
   const productItems = await sql`
     select
-      products.p_id, products.p_name, products.p_category, products.p_price, stocks.remaining_item
+      products.p_id, products.p_name, products.p_category, products.p_price, products.active_sale
     from products
-    left join stocks
-    on products.p_id = stocks.p_id;
+  `
+  return productItems;
+}
+
+async function getAllActiveProductItems() {
+  const productItems = await sql`
+    select
+      products.p_id, products.p_name, products.p_category, products.p_price, products.active_sale
+    from products
+    where active_sale = true
   `
   return productItems;
 }
@@ -33,4 +41,4 @@ async function getProductPrice(product_id) {
   return productItems[0]['p_price'];
 }
 
-export { getAllProductItems, getProductStock, getProductPrice }
+export { getAllProductItems, getProductStock, getProductPrice, getAllActiveProductItems }

@@ -2,13 +2,14 @@ import "./ModifyPopUp.css"
 import { useState, useRef } from 'react';
 import axios from "axios";
 
-const addProduct = async function(product_id, product_name, product_category, product_price){
+const editProduct = async function(product_id, product_name, product_category, product_price, product_active_sale){
   const response = await axios.put(import.meta.env.VITE_API_DOMAIN + "/api/product/",
     {
       "product_id": product_id,
       "product_name": product_name,
       "product_category": product_category,
-      "product_price": product_price
+      "product_price": product_price,
+      "product_active_sale": product_active_sale
     },
     {
       withCredentials: true
@@ -17,11 +18,23 @@ const addProduct = async function(product_id, product_name, product_category, pr
   return response;
 }
 
+const deleteProduct = async function(product_id){
+  const response = await axios.delete(import.meta.env.VITE_API_DOMAIN + `/api/product/?product_id=${product_id}`,
+    {
+      withCredentials: true
+    }
+  );
+
+  console.log(response);
+  return response;
+}
+
 const ModifyPopUp = function({onClose, onRefresh, product}) {
   const [productId, setProductId] = useState(product.p_id);
   const [productName, setProductName] = useState(product.p_name);
   const [productCategory, setProductCategory] = useState(product.p_category);
   const [productPrice, setProductPrice] = useState(product.p_price);
+  const [productOnSale, setProductOnSale] = useState(product.active_sale);
   const fileInputRef = useRef(null);
   
   const upload = async function(p_id, file) {
@@ -53,9 +66,9 @@ const ModifyPopUp = function({onClose, onRefresh, product}) {
     }
   };
 
-  const handleAddProduct = async() => {
+  const handleEditProduct = async() => {
     try {
-      const response = await addProduct(productId, productName, productCategory, productPrice);
+      const response = await editProduct(productId, productName, productCategory, productPrice, productOnSale);
       if (response.status === 200) {
         onRefresh();
         onClose();
@@ -64,6 +77,22 @@ const ModifyPopUp = function({onClose, onRefresh, product}) {
       alert("Unexpected Error: Please try again.")
       onRefresh();
       onClose();
+    }
+  }
+
+  const handleDeleteProduct = async() => {
+    if (confirm("Are you sure to delete this product?") == true) {
+      try {
+      const response = await deleteProduct(productId);
+      if (response.status === 200) {
+        onRefresh();
+        onClose();
+      }
+      } catch (error) {
+        alert("Unexpected Error: This item might be in use and cannot be deleted.")
+        onRefresh();
+        onClose();
+      }
     }
   }
 
@@ -116,17 +145,30 @@ const ModifyPopUp = function({onClose, onRefresh, product}) {
             />
           </p>
 
-
           <p>
 
-          <input
-            type="file"
-            accept="image/jpg"
-            ref={fileInputRef}
-            onChange={handleFileChange}
-            style={{ display: 'none' }}
-          />
-          <a className="upload-photo" onClick={() => handleButtonClick(productId)}>Upload product photo</a>
+            <p className="on-sale-container">
+              <div className="on-sale-item">
+                <label htmlFor="onSale" className="inlineOnSale">On Sale</label>
+              </div>
+              <div className="on-sale-item">
+                <div className="checkbox-wrapper-2">
+                  <input type="checkbox" id="onSale" checked={productOnSale} onChange={(e) => setProductOnSale(e.target.checked)} className="sc-gJwTLC ikxBAC"/>
+                </div>
+              </div>
+            </p>
+
+            <input
+              type="file"
+              accept="image/jpg"
+              ref={fileInputRef}
+              onChange={handleFileChange}
+              style={{ display: 'none' }}
+            />
+            <a className="upload-photo" onClick={() => handleButtonClick(productId)}>Upload product photo</a>
+            <p>
+              <a className="delete-item" onClick={handleDeleteProduct}>Delete product item</a>
+            </p>
 
           </p>
 
@@ -134,11 +176,10 @@ const ModifyPopUp = function({onClose, onRefresh, product}) {
           <button 
             type="button"
             className="resend-payment-slip-btn big-font-btn"
-            onClick={handleAddProduct}>
+            onClick={handleEditProduct}>
             Edit Product
           </button>
         </p>
-
         </div>
       </div>
     </div>

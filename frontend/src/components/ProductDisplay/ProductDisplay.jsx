@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from "react"
 import ProductItem from '../ProductItem/ProductItem.jsx'
 import "./ProductDisplay.css"
 import axios from "axios"
-import { snake_case_string } from '../../function/camelCaseToSnakeCase.js'
 
 const ProductDisplay = function() {
   const [data, setData] = useState([]);
@@ -12,7 +11,7 @@ const ProductDisplay = function() {
   useEffect(() => {
     // Make GET request to fetch data
         axios
-            .get(import.meta.env.VITE_API_DOMAIN + "/api/productItems")
+            .get(import.meta.env.VITE_API_DOMAIN + "/api/productItems?on_sale=true")
             .then((response) => {
             setData(response.data);
           });

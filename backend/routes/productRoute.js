@@ -1,7 +1,7 @@
 import express from "express";
 import bodyParser from "body-parser";
 import { verifyEmployee } from "../middleware/authMiddleware.js"
-import { getAllProducts, getAllProductCategories, insertProduct, updateProduct } from "../controllers/productController.js"
+import { getAllProducts, getAllProductCategories, insertProduct, updateProduct, deleteProduct } from "../controllers/productController.js"
 import multer from "multer";
 
 const storage = multer.diskStorage({
@@ -34,7 +34,7 @@ productRouter.post("/", verifyEmployee, async (req, res) => {
     const product_name = data.product_name;
     const product_category = data.product_category;
     const product_price = data.product_price;
-    const isSuccessful = insertProduct(product_id, product_name, product_category, product_price);
+    const isSuccessful = await insertProduct(product_id, product_name, product_category, product_price);
     if (isSuccessful){
       res.status(200).json({"success": "successfully added product"})
     }
@@ -44,14 +44,27 @@ productRouter.post("/", verifyEmployee, async (req, res) => {
   }
 });
 
-productRouter.put("/", verifyEmployee, async (req, res) => {
+productRouter.delete("/", verifyEmployee, async (req, res) => {
   try {
+    const product_id = req.query.product_id; // Get from query instead of body
+    const isSuccessful = await deleteProduct(product_id);
+    console.log(isSuccessful);
+    if (isSuccessful) { res.status(200).json({"success": "successfully deleted product"}); }
+    throw Error("Fail to delete product")
+  } catch (error) { 
+    res.status(500).json({"failed": "failed to delete product"})
+  }
+});
+
+productRouter.put("/", verifyEmployee, async (req, res) => {
+  try { 
     const data = req.body;
     const product_id = data.product_id;
     const product_name = data.product_name;
     const product_category = data.product_category;
     const product_price = data.product_price;
-    const isSuccessful = updateProduct(product_id, product_name, product_category, product_price);
+    const product_active_sale = data.product_active_sale;
+    const isSuccessful = await updateProduct(product_id, product_name, product_category, product_price, product_active_sale);
     if (isSuccessful){
       res.status(200).json({"success": "successfully update product"})
     }
@@ -63,13 +76,7 @@ productRouter.put("/", verifyEmployee, async (req, res) => {
 
 productRouter.put("/photo/:p_id", verifyEmployee, upload.single('file'), async (req, res) => {
   try {
-    const data = req.body;
-    const p_id = data.p_id;
-    const isSuccessful = upload()
-    if (isSuccessful){
-      res.status(200).json({"success": "successfully upload product photo"})
-    }
-    throw Error("Unsucessful insert product")
+    res.status(200).json({"success": "successfully upload product photo"})
   } catch (error) { 
     res.status(500).json({"failed": "failed to upload product photo"})
   }
