@@ -9,31 +9,11 @@ import {
 
 import { createPortal } from 'react-dom';
 import ProductsTablePopUp from '../ProductsTablePopUp/ProductsTablePopUp.jsx';
+import ModifyPopUp from '../ProductsTablePopUp/ModifyPopUp.jsx';
 
 import * as React from 'react'
 import './ProductsTable.css'
 import axios from 'axios'
-
-const columnHelper = createColumnHelper()
-
-const columns = [
-  {
-    accessorKey: 'p_id',
-    header: 'ID',
-  },
-  {
-    accessorKey: 'p_name',
-    header: 'Product Name',
-  },
-  {
-    accessorKey: 'p_category',
-    header: 'Category',
-  },
-  {
-    accessorKey: 'p_price',
-    header: 'Price',
-  },
-];
 
 function ProductTable() {
   const [data, setData] = React.useState([]);
@@ -42,12 +22,45 @@ function ProductTable() {
   const [globalFilter, setGlobalFilter] = React.useState('');
   const [isPopUpOpen, setIsPopUpOpen] = React.useState(false);
   const [isModifyPopUpOpen, setIsModifyPopUpOpen] = React.useState(false);
-  const [popUpData, setPopUpData] = React.useState([]);
+  const [selectedProduct, setSelectedProduct] = React.useState(null); 
+
+  const columnHelper = createColumnHelper()
+
+  const columns = [
+    {
+      accessorKey: 'p_id',
+      header: 'ID',
+    },
+    {
+      accessorKey: 'p_name',
+      header: 'Product Name',
+    },
+    {
+      accessorKey: 'p_category',
+      header: 'Category',
+    },
+    {
+      accessorKey: 'p_price',
+      header: 'Price',
+    },
+    {
+      id: 'actions',
+      header: 'Actions',
+      cell: ({ row }) => (
+        <button 
+          onClick={() => onClickPopUp(row.original, "modify")}
+          className="edit-btn"
+        >
+          Edit
+        </button>
+      ),
+    },
+  ];
 
   const onClickPopUp = function(data, method) {
-    setPopUpData(data);
+    if (data) { setSelectedProduct(data); };
     if (method === "add") setIsPopUpOpen(true);
-    if (method === "modify") setIsModifyPopUpOpen(false);
+    if (method === "modify") setIsModifyPopUpOpen(true);
   }
 
   const onClosePopUp = function() {
@@ -89,9 +102,9 @@ function ProductTable() {
         onChange={e => setGlobalFilter(e.target.value)}
         placeholder="Search all columns..."
       />
-      {isPopUpOpen && createPortal(<ProductsTablePopUp onClose={onClosePopUp} onRefresh={triggerRefresh} data={popUpData}/>, document.body)}
-      {isModifyPopUpOpen && createPortal(<ProductsTablePopUp onClose={onClosePopUp} onRefresh={triggerRefresh} data={popUpData}/>, document.body)}
-      <button onClick={() => onClickPopUp(popUpData, "add")}>Add Product</button>
+      {isPopUpOpen && createPortal(<ProductsTablePopUp onClose={onClosePopUp} onRefresh={triggerRefresh}/>, document.body)}
+      {isModifyPopUpOpen && createPortal(<ModifyPopUp onClose={onClosePopUp} onRefresh={triggerRefresh} product={selectedProduct}/>, document.body)}
+      <button onClick={() => onClickPopUp([], "add")}>Add Product</button>
       <table>
         <thead>
           {table.getHeaderGroups().map(headerGroup => (

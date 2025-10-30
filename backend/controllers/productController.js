@@ -31,4 +31,18 @@ async function insertProduct(product_id, product_name, product_category, product
   }
 }
 
-export { getAllProducts, getAllProductCategories, insertProduct }
+async function updateProduct(product_id, product_name, product_category, product_price) {
+  try {
+    const product = await sql`
+    update products
+    set p_name=${product_name}, p_category=${product_category}, p_price=${product_price}
+    where p_id = ${product_id}
+  `
+    return true;
+  } catch (error) {
+    console.error("Error while updating product");
+    return false;
+  }
+}
+
+export { getAllProducts, getAllProductCategories, insertProduct, updateProduct }

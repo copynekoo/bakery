@@ -59,7 +59,7 @@ const ProductDisplay = function() {
       </div>
       <div className="productContainer">
         {filteredProducts.map((product) => {
-          const img_url = import.meta.env.VITE_API_DOMAIN + '/' + 'assets' + '/' + 'products' + '/' + snake_case_string(product.p_name) + '.jpg';
+          const img_url = import.meta.env.VITE_API_DOMAIN + '/' + 'assets' + '/' + 'products' + '/' + product.p_id + '.jpg';
           const key = product.p_id;
           const id = product.p_id;
           const name = product.p_name;
