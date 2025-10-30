@@ -9,19 +9,54 @@ async function getNextOrderId() {
   return nextOrderId;
 }
 
-async function getAllOrders(sort_by_time="desc", sort_by_status="All") {
-  const sortByTime = (sort_by_time === "desc") ? "desc" : "asc";
-  
+async function getAllOrders(sort_by_time = "desc", sort_by_status = "All", search_term = "") {
+  const timeDirection = sort_by_time === "asc" ? sql`asc` : sql`desc`;
+  const filters = [];
+
+  if (sort_by_status !== "All") {
+    filters.push(sql`orders.status = ${sort_by_status}`);
+  }
+
+  const trimmedSearch = search_term.trim();
+  if (trimmedSearch) {
+    const searchPattern = `%${trimmedSearch}%`;
+    filters.push(
+      sql`(
+        concat_ws(' ', customers.firstname, customers.lastname) ILIKE ${searchPattern}
+        OR customers.firstname ILIKE ${searchPattern}
+        OR customers.lastname ILIKE ${searchPattern}
+        OR customer_accounts.username ILIKE ${searchPattern}
+        OR cast(orders.customer_id as text) ILIKE ${searchPattern}
+        OR cast(orders.order_id as text) ILIKE ${searchPattern}
+      )`
+    );
+  }
+
   const orders = await sql`
-    select orders.order_id, orders.customer_id, concat(customers.firstname,' ',customers.lastname) as customer_name, orders.tracking_number, order_lines.order_method, order_lines.product_id, products.p_name, order_lines.quantity, order_lines.product_price, orders.order_creation_date, orders.status, orders.status_update_date, orders.payment_proof, orders.shipping_destination
+    select
+      orders.order_id,
+      orders.customer_id,
+      concat(customers.firstname,' ',customers.lastname) as customer_name,
+      orders.tracking_number,
+      order_lines.order_method,
+      order_lines.product_id,
+      products.p_name,
+      order_lines.quantity,
+      order_lines.product_price,
+      orders.order_creation_date,
+      orders.status,
+      orders.status_update_date,
+      orders.payment_proof,
+      orders.shipping_destination
     from orders
     join order_lines
-    on orders.order_id = order_lines.order_id
-    join products ON order_lines.product_id = products.p_id
-    join customers ON orders.customer_id = customers.c_id
-    ${sort_by_status === 'All' ? sql`` : sql`and status = ${sort_by_status}`}
-    order by order_creation_date ${sortByTime === "desc" ? sql`desc` : sql`asc`}
-  `
+      on orders.order_id = order_lines.order_id
+    join products on order_lines.product_id = products.p_id
+    join customers on orders.customer_id = customers.c_id
+    join customer_accounts on customers.c_id = customer_accounts.c_id
+    ${filters.length ? sql`where ${sql.join(filters, sql` and `)}` : sql``}
+    order by orders.order_creation_date ${timeDirection}
+  `;
 
   return orders;
 }

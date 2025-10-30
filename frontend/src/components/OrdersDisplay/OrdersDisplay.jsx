@@ -115,21 +115,24 @@ function OrdersTable() {
     <div className="orders-container">
       <h1 className="orders-title">Orders</h1>
       <div className="dropdown">
-        <span>Status        
+        <div className="dropdown-field">
+          <span className="dropdown-label">Status</span>
           <Select
-          defaultValue={selectedStatusQuery}
-          onChange={setSelectedStatusQuery}
-          options={StatusQueryOptions}
+            classNamePrefix="dropdown-select"
+            defaultValue={selectedStatusQuery}
+            onChange={setSelectedStatusQuery}
+            options={StatusQueryOptions}
           />
-        </span>
-        <span>Sort by Time
+        </div>
+        <div className="dropdown-field">
+          <span className="dropdown-label">Sort by Time</span>
           <Select
-          defaultValue={selectedTimeQuery}
-          onChange={setSelectedTimeQuery}
-          options={DirectionQueryOptions}
+            classNamePrefix="dropdown-select"
+            defaultValue={selectedTimeQuery}
+            onChange={setSelectedTimeQuery}
+            options={DirectionQueryOptions}
           />
-        </span>
-
+        </div>
       </div>
   
       <div className="orders-list">
@@ -202,7 +205,6 @@ function OrdersTable() {
 
                 {/* Right Side */}
                 <div>
-
                   {(order.status === "Waiting for payment") && (
                     <a className="cancel-order" onClick={() => onCancelPopUp(order)}>Cancel Order</a>
                   )}
@@ -214,7 +216,7 @@ function OrdersTable() {
                     onChange={handleFileChange}
                     style={{ display: 'none' }}
                   />
-                  {!order.payment_proof && (
+                  {(!order.payment_proof && order.status !== "Cancelled" && order.status !== "Delivered") && (
                     <button 
                       type="button"
                       className="send-payment-slip-btn"
@@ -225,7 +227,7 @@ function OrdersTable() {
                   {order.payment_proof && (
                     <a href={payment_proof_link} className="paymentProof">View payment proof</a>
                   )}
-                  {order.payment_proof && (
+                  {(order.payment_proof && order.status !== "Cancelled" && order.status !== "Delivered") && (
                     <button 
                       type="button"
                       className="send-payment-slip-btn resend-payment-slip-btn"

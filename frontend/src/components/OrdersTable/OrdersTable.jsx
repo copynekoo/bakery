@@ -70,7 +70,10 @@ const OrdersTable = function() {
   const TableRow = function({order_id, order_method, product_id, product_name, quantity, formattedOrderCreationDate, status, status_update_date, payment_proof, shipping_destination}) {
     const [file, setFile] = useState();
 
+    const canUploadSlip = status !== 'Cancelled' && status !== 'Delivered';
+
     const upload = async function(order_id) {
+      if (!file || !canUploadSlip) return;
       const formData = new FormData();
       formData.append('file', file);
       const response = await axios({
@@ -85,6 +88,7 @@ const OrdersTable = function() {
     }
 
     const payment_proof_link = import.meta.env.VITE_API_DOMAIN + "/public/uploads/" + payment_proof
+    const showUploadControls = canUploadSlip;
     return (
         <>
           <tr>
@@ -98,8 +102,12 @@ const OrdersTable = function() {
             <th>{status_update_date}</th>
             <th><a href={payment_proof_link}>{payment_proof}</a></th>
             <th>{shipping_destination}</th>
-            <input type="file" onChange={(e) => setFile(e.target.files[0])} />
-            <button type="button" onClick={() => upload(order_id)}>Upload payment slip</button>
+            {showUploadControls && (
+              <>
+                <input type="file" onChange={(e) => setFile(e.target.files[0])} />
+                <button type="button" onClick={() => upload(order_id)}>Upload payment slip</button>
+              </>
+            )}
           </tr>
         </>
     )

@@ -150,11 +150,30 @@
 }
 
 .dropdown {
-  display: grid;
-  grid-template-columns: 50% 50%;
-  gap: 128px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
   margin-top: 1.5rem;
   margin-bottom: 1.5rem;
+}
+
+.dropdown-field {
+  display: flex;
+  flex-direction: column;
+  min-width: 220px;
+  flex: 1 1 240px;
+  max-width: 320px;
+}
+
+.dropdown-label {
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #374151;
+}
+
+.dropdown-field .dropdown-select__control {
+  min-height: 38px;
+  width: 100%;
 }
 
 .lilgray {
