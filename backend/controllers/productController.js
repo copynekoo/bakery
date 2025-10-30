@@ -11,10 +11,24 @@ async function getAllProducts() {
 
 async function getAllProductCategories() {
   const categories = await sql`
-    select categories
-    from product_categories;
+    select distinct(p_category)
+    from products;
   `
+
   return categories;
 }
 
-export { getAllProducts, getAllProductCategories }
+async function insertProduct(product_id, product_name, product_category, product_price) {
+  try {
+    const product = await sql`
+    insert into products (p_id, p_name, p_category, p_price)
+    values (${product_id}, ${product_name}, ${product_category}, ${product_price})
+  `
+    return true;
+  } catch (error) {
+    console.error("Error while inserting product");
+    return false;
+  }
+}
+
+export { getAllProducts, getAllProductCategories, insertProduct }
