@@ -1,5 +1,4 @@
 import {
-  createColumnHelper,
   flexRender,
   getCoreRowModel,
   getSortedRowModel, 
@@ -23,8 +22,6 @@ function ProductTable() {
   const [isPopUpOpen, setIsPopUpOpen] = React.useState(false);
   const [isModifyPopUpOpen, setIsModifyPopUpOpen] = React.useState(false);
   const [selectedProduct, setSelectedProduct] = React.useState(null); 
-
-  const columnHelper = createColumnHelper()
 
   const columns = [
     {

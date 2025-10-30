@@ -15,19 +15,6 @@ const calculatePrice = function(order){
   return sum_price;
 }
 
-const fetchOrdersData = async function(){
-  const response = await axios.get(import.meta.env.VITE_API_DOMAIN + "/api/orders",
-    {
-      params: {
-        format: 'true',
-        sort_by_time: 'desc',
-      },
-      withCredentials: true
-    });
-
-  return response.data;
-}
-
 const StatusQueryOptions = [
   { value: 'all', label: 'All' },
   { value: 'need_pay', label: 'Waiting for payment' },
@@ -50,32 +37,31 @@ function OrdersTable() {
   const fileInputRef = useRef(null);
 
   const cancelOrder = async function(order_id){
-  const response = await axios.put(import.meta.env.VITE_API_DOMAIN + "/api/orders/",
-    {
-      "order_id": order_id
-    },
-    {
-      withCredentials: true
-    }
-  );
-
-  return response;
-}
+    await axios.put(import.meta.env.VITE_API_DOMAIN + "/api/orders/",
+      {
+        "order_id": order_id
+      },
+      {
+        withCredentials: true
+      }
+    );
+  }
 
   const upload = async function(order_id, file) {
     const formData = new FormData();
     formData.append('file', file);
-    const response = await axios({
-      method: "post",
-      url: import.meta.env.VITE_API_DOMAIN + '/' + 'api' + '/' + 'orders' + '/' + 'payment',
-      withCredentials: true,
-      headers: {'order_id': order_id},
-      data: formData,
-      })
-    .then(res => {
+    try {
+      await axios({
+        method: "post",
+        url: import.meta.env.VITE_API_DOMAIN + '/' + 'api' + '/' + 'orders' + '/' + 'payment',
+        withCredentials: true,
+        headers: {'order_id': order_id},
+        data: formData,
+      });
       setRefreshTrigger(prev => prev+1);
-    })
-    .catch(er => console.log(er))
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   const handleButtonClick = (orderId) => {
@@ -94,9 +80,8 @@ function OrdersTable() {
 
   const onCancelPopUp = function(order){
     const order_id = order.order_id;
-    let text;
-    if (confirm("Are you sure to cancel Order #"+order_id+"?") == true) {
-      const response = cancelOrder(order_id).then(() => setRefreshTrigger(prev => prev+1));
+    if (window.confirm("Are you sure to cancel Order #"+order_id+"?") == true) {
+      cancelOrder(order_id).then(() => setRefreshTrigger(prev => prev+1));
     }
   }
 

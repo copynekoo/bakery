@@ -7,6 +7,7 @@ import registerRouter from './routes/registerRoute.js'
 import verifyRouter from './routes/verifyRoute.js'
 import profileRouter from './routes/profileRoute.js'
 import orderRouter from './routes/orderRoute.js'
+import cartRouter from './routes/cartRoute.js'
 import employeeLoginRouter from './routes/employees/loginRoute.js'
 import cors from 'cors'
 import 'dotenv/config'
@@ -31,6 +32,7 @@ app.use("/api/auth/register", cors(corsOptions), registerRouter);
 app.use("/api/verifyToken", cors(corsOptions), verifyRouter);
 app.use("/api/profile", cors(corsOptions), profileRouter);
 app.use("/api/orders", cors(corsOptions), orderRouter);
+app.use("/api/cart", cors(corsOptions), cartRouter);
 
 app.use("/api/employees/auth/login", cors(corsOptions), employeeLoginRouter);
 

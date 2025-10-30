@@ -3,7 +3,7 @@ import { useState } from 'react';
 import axios from "axios";
 
 const changeStatus = async function(order_id, status, trackingNumber){
-  const response = await axios.put(import.meta.env.VITE_API_DOMAIN + "/api/orders/status",
+  return axios.put(import.meta.env.VITE_API_DOMAIN + "/api/orders/status",
     {
       "order_id": order_id,
       "status": status,
@@ -13,8 +13,6 @@ const changeStatus = async function(order_id, status, trackingNumber){
       withCredentials: true
     }
   );
-
-  return response;
 }
 
 const OrdersDisplayPopUp = function({onClose, onRefresh, data, isCancel}) {  
@@ -24,7 +22,6 @@ const OrdersDisplayPopUp = function({onClose, onRefresh, data, isCancel}) {
   if (data.status === "Waiting for approval") method = "approve";
   if (data.status === "Approved") method = "deliver";
   if (isCancel) method = "cancel";
-  console.log(method);
   const orderItems = Object.values(data.order_lines);
 
   const handleApprove = async () => {
@@ -35,6 +32,7 @@ const OrdersDisplayPopUp = function({onClose, onRefresh, data, isCancel}) {
         onClose();
       }
     } catch (error) {
+      console.log(error);
       alert("Unexpected Error: Please try again.")
       onRefresh();
       onClose();
@@ -49,6 +47,7 @@ const OrdersDisplayPopUp = function({onClose, onRefresh, data, isCancel}) {
         onClose();
       }
     } catch (error) {
+      console.log(error);
       alert("Unexpected Error: Please try again.")
       onRefresh();
       onClose();
@@ -67,6 +66,7 @@ const OrdersDisplayPopUp = function({onClose, onRefresh, data, isCancel}) {
         onClose();
       }
     } catch (error) {
+      console.log(error);
       alert("Unexpected Error: Please try again.")
       onRefresh();
       onClose();

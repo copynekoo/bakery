@@ -19,10 +19,10 @@ const RegisterPanel = function() {
     else { 
       try {
         const requestBody = {username, password, firstname, lastname};
-        const response = await axios.post(import.meta.env.VITE_API_DOMAIN + '/' + 'api' + '/' + 'auth' + '/' + 'register', requestBody);
+        await axios.post(import.meta.env.VITE_API_DOMAIN + '/' + 'api' + '/' + 'auth' + '/' + 'register', requestBody);
         navigate({to: '/login'})
       } catch (error) {
-        setResult(error.response.data.message);
+        setResult(error?.response?.data?.message || "Registration failed.");
       }
     }
 

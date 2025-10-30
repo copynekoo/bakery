@@ -25,12 +25,11 @@ const deleteProduct = async function(product_id){
     }
   );
 
-  console.log(response);
   return response;
 }
 
 const ModifyPopUp = function({onClose, onRefresh, product}) {
-  const [productId, setProductId] = useState(product.p_id);
+  const productId = product.p_id;
   const [productName, setProductName] = useState(product.p_name);
   const [productCategory, setProductCategory] = useState(product.p_category);
   const [productPrice, setProductPrice] = useState(product.p_price);
@@ -40,16 +39,18 @@ const ModifyPopUp = function({onClose, onRefresh, product}) {
   const upload = async function(p_id, file) {
     const formData = new FormData();
     formData.append('file', file);
-    const response = await axios({
-      method: "put",
-      url: import.meta.env.VITE_API_DOMAIN + '/' + 'api' + '/' + 'product' + '/' + 'photo' + '/' + p_id,
-      withCredentials: true,
-      data: formData,
-      })
-    .then(res => {
-      alert("Succesfully upload photo")
-    })
-    .catch(er => console.log(er))
+    try {
+      await axios({
+        method: "put",
+        url: import.meta.env.VITE_API_DOMAIN + '/' + 'api' + '/' + 'product' + '/' + 'photo' + '/' + p_id,
+        withCredentials: true,
+        data: formData,
+      });
+      alert("Succesfully upload photo");
+    } catch (error) {
+      console.log(error);
+      alert("Unable to upload photo.");
+    }
   }
 
   const handleButtonClick = (productId) => {
@@ -74,6 +75,7 @@ const ModifyPopUp = function({onClose, onRefresh, product}) {
         onClose();
       }
     } catch (error) {
+      console.log(error);
       alert("Unexpected Error: Please try again.")
       onRefresh();
       onClose();
@@ -81,7 +83,7 @@ const ModifyPopUp = function({onClose, onRefresh, product}) {
   }
 
   const handleDeleteProduct = async() => {
-    if (confirm("Are you sure to delete this product?") == true) {
+    if (window.confirm("Are you sure to delete this product?") == true) {
       try {
       const response = await deleteProduct(productId);
       if (response.status === 200) {
@@ -89,6 +91,7 @@ const ModifyPopUp = function({onClose, onRefresh, product}) {
         onClose();
       }
       } catch (error) {
+        console.log(error);
         alert("Unexpected Error: This item might be in use and cannot be deleted.")
         onRefresh();
         onClose();

@@ -1,13 +1,22 @@
 import express from "express"
 import bodyParser from "body-parser";
 import multer from "multer";
+import fs from "fs";
+import path from "path";
 import { verifyToken, verifyEmployee } from "../middleware/authMiddleware.js"
 import { getOrder, purchase, addPayment, changeStatus, getStatus, getAllOrders, cancelOrder } from "../controllers/orderController.js"
 import { reformatOrders, reformatAllOrders } from "../utils/reformatOrders.js"
 
+const uploadDir = path.join(process.cwd(), "public", "uploads");
+
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    return cb(null, "./public/uploads")
+    fs.mkdir(uploadDir, { recursive: true }, (mkdirError) => {
+      if (mkdirError) {
+        return cb(mkdirError);
+      }
+      cb(null, uploadDir);
+    });
   },
   filename: function (req, file, cb) {
     const fileName = `${Date.now()}-${file.originalname}`

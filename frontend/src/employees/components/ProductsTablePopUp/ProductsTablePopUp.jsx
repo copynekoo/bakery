@@ -32,6 +32,7 @@ const ProductsTablePopUp = function({onClose, onRefresh}) {
         onClose();
       }
     } catch (error) {
+      console.log(error);
       alert("Unexpected Error: Please try again.")
       onRefresh();
       onClose();

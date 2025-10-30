@@ -5,14 +5,6 @@ import "./OrdersDisplay.css";
 import Select from 'react-select';
 import OrdersDisplayPopUp from '../OrdersDisplayPopUp/OrdersDisplayPopUp';
 
-const statusConfig = {
-  "Delivered": { class: "status-delivered", display: "Delivered" },
-  "Waiting for approval": { class: "status-waiting", display: "Awaiting Approval" },
-  "Processing": { class: "status-processing", display: "Processing" },
-  "Shipped": { class: "status-shipped", display: "Shipped" },
-  "Cancelled": { class: "status-cancelled", display: "Cancelled" }
-};
-
 const calculatePrice = function(order){
   let sum_price = 0;
   const order_lines = order.order_lines;
