@@ -146,8 +146,9 @@ router.get('/all', verifyEmployee, async (req, res) => {
     const format = req.query.format;
     const sort_by_time = req.query.sort_by_time;
     const sort_by_status = req.query.sort_by_status;
+    const search = req.query.search || "";
     //
-    let orders = await getAllOrders(sort_by_time, sort_by_status);
+    let orders = await getAllOrders(sort_by_time, sort_by_status, search);
     if (format === 'true'){
       orders = reformatAllOrders(orders);
     }

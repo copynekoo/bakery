@@ -1,4 +1,4 @@
-import { useEffect, useState} from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import axios from "axios";
 import { createPortal } from 'react-dom';
 import "./OrdersDisplay.css";
@@ -26,12 +26,12 @@ const calculatePrice = function(order){
 }
 
 const StatusQueryOptions = [
-  { value: 'all', label: 'All' },
-  { value: 'need_pay', label: 'Waiting for payment' },
-  { value: 'need_approval', label: 'Waiting for approval' },
-  { value: 'approved', label: 'Approved'},
-  { value: 'delivered', label: 'Delivered'},
-  { value: 'cancelled', label: 'Cancelled'}
+  { value: 'All', label: 'All' },
+  { value: 'Waiting for payment', label: 'Waiting for payment' },
+  { value: 'Waiting for approval', label: 'Waiting for approval' },
+  { value: 'Approved', label: 'Approved'},
+  { value: 'Delivered', label: 'Delivered'},
+  { value: 'Cancelled', label: 'Cancelled'}
 ];
 
 const DirectionQueryOptions = [
@@ -40,13 +40,18 @@ const DirectionQueryOptions = [
 ];
 
 function OrdersTable() {
-  const [data, setData] = useState([]);
+  const [orders, setOrders] = useState([]);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
-  const [selectedStatusQuery, setSelectedStatusQuery] = useState({ value: 'all', label: 'All' });
-  const [selectedTimeQuery, setSelectedTimeQuery] = useState({ value: 'desc', label: 'Latest' });
+  const [selectedStatusQuery, setSelectedStatusQuery] = useState(StatusQueryOptions[0]);
+  const [selectedTimeQuery, setSelectedTimeQuery] = useState(DirectionQueryOptions[0]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [appliedSearchTerm, setAppliedSearchTerm] = useState('');
   const [isPopUpOpen, setIsPopUpOpen] = useState(false);
   const [isCancel, setIsCancel] = useState(false);
   const [PopUpData, setPopUpData] = useState([]);
+
+  const statusValue = selectedStatusQuery.value;
+  const timeValue = selectedTimeQuery.value;
 
   const onClickPopUp = function(data) {
     data.sum_price = calculatePrice(data);
@@ -70,39 +75,107 @@ function OrdersTable() {
   useEffect(() => {
     axios.get(import.meta.env.VITE_API_DOMAIN + "/api/orders/all",
     {
-      params: { format: 'true',
-        sort_by_time: selectedTimeQuery.value,
-        sort_by_status: selectedStatusQuery.label,
+      params: {
+        format: 'true',
+        sort_by_time: timeValue,
+        sort_by_status: statusValue,
+        search: appliedSearchTerm.trim() || undefined,
       },
       withCredentials: true
-    }).then(response => setData(response.data));
-  }, [refreshTrigger, selectedStatusQuery, selectedTimeQuery]);
+    }).then(response => {
+      setOrders(response.data);
+    });
+  }, [refreshTrigger, statusValue, timeValue, appliedSearchTerm]);
+
+  const displayedOrders = useMemo(() => {
+    const normalizedSearch = appliedSearchTerm.trim().toLowerCase();
+
+    return [...orders]
+      .filter((order) => {
+        const matchesStatus =
+          statusValue === 'All' || order.status === statusValue;
+
+        if (!normalizedSearch) {
+          return matchesStatus;
+        }
+
+        const name = (order.customer_name || '').toLowerCase();
+        const customerId = String(order.customer_id || '');
+        const orderId = String(order.order_id || '');
+
+        const matchesSearch =
+          name.includes(normalizedSearch) ||
+          customerId.includes(normalizedSearch) ||
+          orderId.includes(normalizedSearch);
+
+        return matchesStatus && matchesSearch;
+      })
+      .sort((a, b) => {
+        const dateA = new Date(a.order_creation_date).getTime();
+        const dateB = new Date(b.order_creation_date).getTime();
+        return timeValue === 'asc' ? dateA - dateB : dateB - dateA;
+      });
+  }, [orders, statusValue, appliedSearchTerm, timeValue]);
+
+  const handleSearch = () => {
+    setAppliedSearchTerm(searchTerm);
+  };
+
+  const handleSearchKeyDown = (event) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      handleSearch();
+    }
+  };
 
   return (
     <div className="orders-container">
       <h1 className="orders-title">Orders</h1>
       <div className="dropdown">
-        <span>Status        
+        <div className="dropdown-field">
+          <span className="dropdown-label">Status</span>
           <Select
-          defaultValue={selectedStatusQuery}
-          onChange={setSelectedStatusQuery}
-          options={StatusQueryOptions}
+            classNamePrefix="dropdown-select"
+            value={selectedStatusQuery}
+            onChange={(option) => setSelectedStatusQuery(option ?? StatusQueryOptions[0])}
+            options={StatusQueryOptions}
           />
-        </span>
-        <span>Sort by Time
+        </div>
+        <div className="dropdown-field">
+          <span className="dropdown-label">Sort by Time</span>
           <Select
-          defaultValue={selectedTimeQuery}
-          onChange={setSelectedTimeQuery}
-          options={DirectionQueryOptions}
+            classNamePrefix="dropdown-select"
+            value={selectedTimeQuery}
+            onChange={(option) => setSelectedTimeQuery(option ?? DirectionQueryOptions[0])}
+            options={DirectionQueryOptions}
           />
-        </span>
-
+        </div>
+        <div className="dropdown-field dropdown-field-search">
+          <span className="dropdown-label">Search</span>
+          <div className="dropdown-search-controls">
+            <input
+              type="text"
+              className="dropdown-input"
+              placeholder="Search by customer name, customer ID, or order ID"
+              value={searchTerm}
+              onChange={(event) => setSearchTerm(event.target.value)}
+              onKeyDown={handleSearchKeyDown}
+            />
+            <button
+              type="button"
+              className="dropdown-button"
+              onClick={handleSearch}
+            >
+              Search
+            </button>
+          </div>
+        </div>
       </div>
 
       {isPopUpOpen && createPortal(<OrdersDisplayPopUp onClose={onClosePopUp} onRefresh={triggerRefresh} data={PopUpData} isCancel={isCancel}/>, document.body)}
 
       <div className="orders-list">
-        {data.map((order) => {
+        {displayedOrders.map((order) => {
           const orderDate = new Date(order.order_creation_date).toLocaleString("en-EN", {
             dateStyle: "long",
             timeStyle: "short",
