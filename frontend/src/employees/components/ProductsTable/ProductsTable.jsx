@@ -1,0 +1,105 @@
+import {
+  createColumnHelper,
+  flexRender,
+  getCoreRowModel,
+  getSortedRowModel, 
+  getFilteredRowModel,
+  useReactTable,
+} from '@tanstack/react-table'
+
+import * as React from 'react'
+import './ProductsTable.css'
+import axios from 'axios'
+
+const columnHelper = createColumnHelper()
+
+const columns = [
+  {
+    accessorKey: 'p_id',
+    header: 'ID',
+  },
+  {
+    accessorKey: 'p_name',
+    header: 'Product Name',
+  },
+  {
+    accessorKey: 'p_category',
+    header: 'Category',
+  },
+  {
+    accessorKey: 'p_price',
+    header: 'Price',
+  },
+];
+
+function ProductTable() {
+  const [data, setData] = React.useState([]);
+  const [sorting, setSorting] = React.useState([]);
+  const [globalFilter, setGlobalFilter] = React.useState('');
+  const rerender = React.useReducer(() => ({}), {})[1]
+
+  React.useEffect(() => {
+    // Make GET request to fetch data
+        axios
+            .get(import.meta.env.VITE_API_DOMAIN + "/api/product")
+            .then((response) => {
+            setData(response.data);
+          });
+  }, []);
+
+  const table = useReactTable({
+    data,
+    columns,
+        state: {
+      sorting,
+      globalFilter,
+    },
+    onSortingChange: setSorting,
+    onGlobalFilterChange: setGlobalFilter,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+  });
+
+  return (
+    <div>
+      <input
+        value={globalFilter}
+        onChange={e => setGlobalFilter(e.target.value)}
+        placeholder="Search all columns..."
+      />
+      <table>
+        <thead>
+          {table.getHeaderGroups().map(headerGroup => (
+            <tr key={headerGroup.id}>
+              {headerGroup.headers.map(header => (
+                <th key={header.id}>
+                  {flexRender(
+                    header.column.columnDef.header,
+                    header.getContext()
+                  )}
+                </th>
+              ))}
+            </tr>
+          ))}
+        </thead>
+        <tbody>
+          {table.getRowModel().rows.map(row => (
+            <tr key={row.id}>
+              {row.getVisibleCells().map(cell => (
+                <td key={cell.id}>
+                  {flexRender(
+                    cell.column.columnDef.cell,
+                    cell.getContext()
+                  )}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+export default ProductTable
