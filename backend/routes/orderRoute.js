@@ -55,12 +55,12 @@ router.put('/', verifyToken, async(req, res) => {
     if (valid === false) { throw Error("Not valid") }
     res.status(200).json({
       "status": "success",
-      "message": "change status success"
+      "message": "cancel order success"
     })
   } catch (err) {
     res.status(500).json({
       "status": "failed",
-      "message": "change status unvalid"
+      "message": "cancel order unvalid"
     })
   }
 })
