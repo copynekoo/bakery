@@ -5,7 +5,7 @@
   list-style-type: none;
   margin: 0px;
   padding: 0px;
-  background-color: #87cefa;
+  background-color: #dcf1fe;
   display: flex;
   justify-content: center;
 }
@@ -18,5 +18,5 @@
 }
 
 .navBar li a:hover {
-  background-color: #dcf1fe;
+  background-color: #87cefa;
 }
