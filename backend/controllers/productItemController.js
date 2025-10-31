@@ -41,4 +41,14 @@ async function getProductPrice(product_id) {
   return productItems[0]['p_price'];
 }
 
-export { getAllProductItems, getProductStock, getProductPrice, getAllActiveProductItems }
+async function isProductOnSale(product_id) {
+  const productOnSale = await sql`
+  select
+    products.active_sale
+  from products
+  where p_id = ${product_id}
+  `
+  return productOnSale[0]['active_sale'];
+}
+
+export { getAllProductItems, getProductStock, getProductPrice, getAllActiveProductItems, isProductOnSale }

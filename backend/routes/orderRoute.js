@@ -5,6 +5,7 @@ import fs from "fs";
 import path from "path";
 import { verifyToken, verifyEmployee } from "../middleware/authMiddleware.js"
 import { getOrder, purchase, addPayment, changeStatus, getStatus, getAllOrders, cancelOrder } from "../controllers/orderController.js"
+import { isProductOnSale } from "../controllers/productItemController.js"
 import { reformatOrders, reformatAllOrders } from "../utils/reformatOrders.js"
 
 const uploadDir = path.join(process.cwd(), "public", "uploads");
@@ -75,6 +76,9 @@ router.post("/purchase", verifyToken, async (req, res) => {
     }
     for (const orderKey in order_lines) {
       const order = order_lines[orderKey];
+      const product_id = order.product_id;
+      const isProductIdOnSale = await isProductOnSale(product_id)
+      if (isProductIdOnSale === false) throw new Error("Invalid product ID");
       const quantity = order.quantity;
       if (quantity <= 0){
         throw new Error("0 is not permitted")
