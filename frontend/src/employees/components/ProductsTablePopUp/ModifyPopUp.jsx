@@ -1,6 +1,7 @@
 import "./ModifyPopUp.css"
 import { useState, useRef } from 'react';
 import axios from "axios";
+import { useNavigate } from "@tanstack/react-router";
 
 const editProduct = async function(product_id, product_name, product_category, product_price, product_active_sale){
   const response = await axios.put(import.meta.env.VITE_API_DOMAIN + "/api/product/",
@@ -15,6 +16,7 @@ const editProduct = async function(product_id, product_name, product_category, p
       withCredentials: true
     }
   );
+
   return response;
 }
 
@@ -29,6 +31,7 @@ const deleteProduct = async function(product_id){
 }
 
 const ModifyPopUp = function({onClose, onRefresh, product}) {
+  const navigate = useNavigate();
   const productId = product.p_id;
   const [productName, setProductName] = useState(product.p_name);
   const [productCategory, setProductCategory] = useState(product.p_category);
@@ -76,7 +79,10 @@ const ModifyPopUp = function({onClose, onRefresh, product}) {
       }
     } catch (error) {
       console.log(error);
-      alert("Unexpected Error: Please try again.")
+      if (error.response.status === 401) {
+        alert("Unauthorized Access")
+        navigate({to: "/employees"})
+      }
       onRefresh();
       onClose();
     }

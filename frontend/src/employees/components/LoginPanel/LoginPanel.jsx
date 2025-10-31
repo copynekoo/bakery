@@ -22,7 +22,7 @@ const EmployeeLoginPanel = function () {
 
       // employee token
       document.cookie = `employee-token=${response.data.token}; path=/; SameSite=Strict`;
-      navigate({ to: "/employees/dashboard" });
+      navigate({ to: "/employees/products" });
     } catch (err) {
       console.log(err);
       setError("Invalid username or password.");

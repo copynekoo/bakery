@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import axios from "axios";
 import { createPortal } from 'react-dom';
 import "./OrdersDisplay.css";
+import { useNavigate } from "@tanstack/react-router";
 import Select from 'react-select';
 import OrdersDisplayPopUp from '../OrdersDisplayPopUp/OrdersDisplayPopUp';
 
@@ -32,6 +33,7 @@ const DirectionQueryOptions = [
 ];
 
 function OrdersTable() {
+  const navigate = useNavigate();
   const [orders, setOrders] = useState([]);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [selectedStatusQuery, setSelectedStatusQuery] = useState(StatusQueryOptions[0]);
@@ -65,18 +67,29 @@ function OrdersTable() {
   };
 
   useEffect(() => {
-    axios.get(import.meta.env.VITE_API_DOMAIN + "/api/orders/all",
-    {
-      params: {
-        format: 'true',
-        sort_by_time: timeValue,
-        sort_by_status: statusValue,
-        search: appliedSearchTerm.trim() || undefined,
-      },
-      withCredentials: true
-    }).then(response => {
-      setOrders(response.data);
-    });
+    const fetchOrders = async () => {
+      try {
+        const response = await axios.get(import.meta.env.VITE_API_DOMAIN + "/api/orders/all", {
+          params: {
+            format: 'true',
+            sort_by_time: timeValue,
+            sort_by_status: statusValue,
+            search: appliedSearchTerm.trim() || undefined,
+          },
+          withCredentials: true
+        });
+        
+        if (response.status === 401) {
+          throw new Error('Unauthorized');
+        }
+        
+        setOrders(response.data);
+      } catch (err) {
+        navigate({ to: "/employees/" });
+      }
+    };
+
+    fetchOrders();
   }, [refreshTrigger, statusValue, timeValue, appliedSearchTerm]);
 
   const displayedOrders = useMemo(() => {

@@ -1,6 +1,7 @@
 import "./ProductsTablePopUp.css"
 import { useState } from 'react';
 import axios from "axios";
+import { useNavigate } from "@tanstack/react-router";
 
 const addProduct = async function(product_id, product_name, product_category, product_price){
   const response = await axios.post(import.meta.env.VITE_API_DOMAIN + "/api/product/",
@@ -19,6 +20,7 @@ const addProduct = async function(product_id, product_name, product_category, pr
 }
 
 const ProductsTablePopUp = function({onClose, onRefresh}) {
+  const navigate = useNavigate();
   const [productId, setProductId] = useState();
   const [productName, setProductName] = useState("");
   const [productCategory, setProductCategory] = useState("");
@@ -33,7 +35,27 @@ const ProductsTablePopUp = function({onClose, onRefresh}) {
       }
     } catch (error) {
       console.log(error);
-      alert("Unexpected Error: Please try again.")
+      if (error.response.status === 401) {
+        alert("Unauthorized Access")
+        navigate({to: "/employees"})
+      }
+    const handleEditProduct = async() => {
+    try {
+      const response = await editProduct(productId, productName, productCategory, productPrice, productOnSale);
+      if (response.status === 200) {
+        onRefresh();
+        onClose();
+      }
+    } catch (error) {
+      console.log(error);
+      if (error.response.status === 401) {
+        alert("Unauthorized Access")
+        navigate({to: "/employees"})
+      }
+      onRefresh();
+      onClose();
+    }
+  }
       onRefresh();
       onClose();
     }
