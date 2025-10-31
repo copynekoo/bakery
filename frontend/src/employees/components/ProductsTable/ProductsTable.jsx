@@ -30,15 +30,14 @@ const formatPrice = (value) => {
   if (value == null || value === '') return '-';
   const num = Number(value);
   if (Number.isNaN(num)) return value;
-  return `$${num.toFixed(2)}`;
+  return `${num.toFixed(0)}`;
 };
 
 function ProductTable() {
   const [data, setData] = React.useState([]);
-  const [sorting, setSorting] = React.useState([]);
+  const [sorting, setSorting] = React.useState([{ id: 'p_id', desc: false }]);
   const [globalFilter, setGlobalFilter] = React.useState('');
   const [refreshTrigger, setRefreshTrigger] = React.useState(0);
-
   const [isPopUpOpen, setIsPopUpOpen] = React.useState(false);
   const [isModifyPopUpOpen, setIsModifyPopUpOpen] = React.useState(false);
   const [selectedProduct, setSelectedProduct] = React.useState(null);
