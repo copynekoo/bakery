@@ -40,11 +40,15 @@ router.get('/', verifyToken, async (req, res) => {
   const sort_by_status = req.query.sort_by_status;
   //
   const username = req.username;
-  let order = await getOrder(username, sort_by_time, sort_by_status);
-  if (format === 'true'){
-    order = reformatOrders(order);
+  try { 
+    let order = await getOrder(username, sort_by_time, sort_by_status);
+    if (format === 'true'){
+      order = reformatOrders(order);
+    }
+    res.status(200).json(order);
+  } catch (err) {
+    res.status(401).json({"error": "Unable to fetch account"});
   }
-  res.status(200).json(order);
 });
 
 router.put('/', verifyToken, async(req, res) => {

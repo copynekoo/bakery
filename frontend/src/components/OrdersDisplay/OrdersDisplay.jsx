@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import axios from "axios";
 import "./OrdersDisplay.css";
+import { useNavigate } from "@tanstack/react-router";
 import Select from 'react-select';
 
 const calculatePrice = function(order){
@@ -30,6 +31,7 @@ const DirectionQueryOptions = [
 ];
 
 function OrdersTable() {
+  const navigate = useNavigate();
   const [data, setData] = useState([]);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [selectedStatusQuery, setSelectedStatusQuery] = useState({ value: 'all', label: 'All' });
@@ -86,14 +88,28 @@ function OrdersTable() {
   }
 
   useEffect(() => {
-    axios.get(import.meta.env.VITE_API_DOMAIN + "/api/orders",
-    {
-      params: { format: 'true',
-        sort_by_time: selectedTimeQuery.value,
-        sort_by_status: selectedStatusQuery.label,
-      },
-      withCredentials: true
-    }).then(response => setData(response.data));
+    const fetchOrders = async () => {
+      try {
+        const response = await axios.get(import.meta.env.VITE_API_DOMAIN + "/api/orders", {
+          params: { 
+            format: 'true',
+            sort_by_time: selectedTimeQuery.value,
+            sort_by_status: selectedStatusQuery.label,
+          },
+          withCredentials: true
+        });
+        
+        if (response.status === 401) {
+          throw new Error('Unauthorized');
+        }
+        
+        setData(response.data);
+      } catch (err) {
+        navigate({ to: "/login" });
+      }
+    };
+
+    fetchOrders();
   }, [refreshTrigger, selectedStatusQuery, selectedTimeQuery]);
 
   return (

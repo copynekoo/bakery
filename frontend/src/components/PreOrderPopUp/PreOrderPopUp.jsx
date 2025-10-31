@@ -1,8 +1,10 @@
 import "./PreOrderPopUp.css"
 import { useState, useEffect } from "react"
+import { useNavigate } from "@tanstack/react-router";
 import axios from "axios"
 
 const PreOrderPopUp = function({id, name, price, onClose}) {
+  const navigate = useNavigate();
   const [preOrderQuantity, setPreOrderQuantity] = useState(1);
   const [defaultShippingDestination, setDefaultShippingDestination] = useState("");
   const [customShippingDestination, setCustomShippingDestination] = useState("");
@@ -18,6 +20,7 @@ const PreOrderPopUp = function({id, name, price, onClose}) {
         );
         setDefaultShippingDestination(response.data?.[0]?.defaultshippingdst || "");
       } catch (error) {
+        navigate({ to: "/login" });
         console.log(error);
       }
     };
