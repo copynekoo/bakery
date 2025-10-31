@@ -20,13 +20,33 @@ async function getAllProductCategories() {
 
 async function insertProduct(product_id, product_name, product_category, product_price) {
   try {
-    const product = await sql`
-    insert into products (p_id, p_name, p_category, p_price)
-    values (${product_id}, ${product_name}, ${product_category}, ${product_price})
-  `
+    const trimmedCategory = (product_category ?? '').trim()
+    const numericPrice = Number(product_price)
+
+    if (!trimmedCategory) {
+      throw new Error('Product category is required')
+    }
+
+    if (Number.isNaN(numericPrice)) {
+      throw new Error('Product price must be a number')
+    }
+
+    await sql`
+      insert into product_categories (categories)
+      values (${trimmedCategory})
+      on conflict (categories) do nothing
+    `
+
+    await sql`
+      insert into products (p_id, p_name, p_category, p_price, active_sale)
+      values (${product_id}, ${product_name}, ${trimmedCategory}, ${numericPrice}, false)
+    `
     return true;
   } catch (error) {
-    console.error("Error while inserting product");
+    console.error("Error while inserting product", {
+      product_id,
+      error: error.message,
+    });
     return false;
   }
 }

@@ -35,12 +35,12 @@ productRouter.post("/", verifyEmployee, async (req, res) => {
     const product_category = data.product_category;
     const product_price = data.product_price;
     const isSuccessful = await insertProduct(product_id, product_name, product_category, product_price);
-    if (isSuccessful){
-      res.status(200).json({"success": "successfully added product"})
+    if (isSuccessful) {
+      return res.status(200).json({ success: "successfully added product" });
     }
-    throw Error("Unsucessful insert product")
+    throw Error("Unsuccessful insert product");
   } catch (error) { 
-    res.status(500).json({"failed": "failed to add product"})
+    res.status(500).json({ failed: "failed to add product" });
   }
 });
 
@@ -49,10 +49,12 @@ productRouter.delete("/", verifyEmployee, async (req, res) => {
     const product_id = req.query.product_id; // Get from query instead of body
     const isSuccessful = await deleteProduct(product_id);
     console.log(isSuccessful);
-    if (isSuccessful) { res.status(200).json({"success": "successfully deleted product"}); }
-    throw Error("Fail to delete product")
+    if (isSuccessful) {
+      return res.status(200).json({ success: "successfully deleted product" });
+    }
+    throw Error("Fail to delete product");
   } catch (error) { 
-    res.status(500).json({"failed": "failed to delete product"})
+    res.status(500).json({ failed: "failed to delete product" });
   }
 });
 
@@ -65,12 +67,12 @@ productRouter.put("/", verifyEmployee, async (req, res) => {
     const product_price = data.product_price;
     const product_active_sale = data.product_active_sale;
     const isSuccessful = await updateProduct(product_id, product_name, product_category, product_price, product_active_sale);
-    if (isSuccessful){
-      res.status(200).json({"success": "successfully update product"})
+    if (isSuccessful) {
+      return res.status(200).json({ success: "successfully update product" });
     }
-    throw Error("Unsucessful insert product")
+    throw Error("Unsuccessful update product");
   } catch (error) { 
-    res.status(500).json({"failed": "failed to update product"})
+    res.status(500).json({ failed: "failed to update product" });
   }
 });
 
