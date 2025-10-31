@@ -1,4 +1,4 @@
-.modal {
+.products-table-modal {
   position: fixed; /* Stay in place */
   z-index: 1; /* Sit on top */
   padding-top: 100px; /* Location of the box */
@@ -12,7 +12,7 @@
 }
 
 /* Modal Content */
-.modal-content {
+.products-table-modal-content {
   background-color: #fefefe;
   max-width: 300px;
   margin: auto;
@@ -22,21 +22,21 @@
 }
 
 /* The Close Button */
-.close {
+.products-table-close {
   color: #aaaaaa;
   float: right;
   font-size: 28px;
   font-weight: bold;
 }
 
-.close:hover,
-.close:focus {
+.products-table-close:hover,
+.products-table-close:focus {
   color: #000;
   text-decoration: none;
   cursor: pointer;
 }
 
-.textfield-input {
+.products-table-textfield-input {
   width: 90%;
   max-width: 400px;
   padding: 12px 16px;
@@ -51,22 +51,22 @@
   font-family: inherit;
 }
 
-.textfield-input:focus {
+.products-table-textfield-input:focus {
   border-color: #007bff;
   box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
   background-color: #fafbfc;
 }
 
-.textfield-input:hover {
+.products-table-textfield-input:hover {
   border-color: #c8d1dc;
 }
 
-.textfield-input::placeholder {
+.products-table-textfield-input::placeholder {
   color: #a0a4a8;
   font-style: italic;
 }
 
-.textfield-input:disabled {
+.products-table-textfield-input:disabled {
   background-color: #f8f9fa;
   border-color: #e9ecef;
   color: #6c757d;
@@ -74,11 +74,11 @@
 }
 
 /* Container styling for better layout */
-.textfield-input-container {
+.products-table-textfield-input-container {
   margin: 20px 0;
 }
 
-.textfield-input-container label {
+.products-table-textfield-input-container label {
   display: block;
   margin-bottom: 8px;
   font-weight: 600;
@@ -88,7 +88,7 @@
   letter-spacing: 0.5px;
 }
 
-.resend-payment-slip-btn {
+.products-table-resend-payment-slip-btn {
   color: white;
   padding: 0.75rem;
   padding-left: 1.5rem;
@@ -101,11 +101,11 @@
   border: none;
 }
 
-.resend-payment-slip-btn:hover {
+.products-table-resend-payment-slip-btn:hover {
   background-color: #57a1f2;
 }
 
-.center {
+.products-table-center {
   display: flex;
   justify-content: center;
 }

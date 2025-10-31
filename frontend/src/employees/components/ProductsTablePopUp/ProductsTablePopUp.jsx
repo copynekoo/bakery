@@ -40,10 +40,10 @@ const ProductsTablePopUp = function({onClose, onRefresh}) {
   }
 
   return (
-    <div className="modal">
-      <div className="modal-content">
-        <span className="close" onClick={onClose}>&times;</span>
-        <div className="textfield-input-container">
+    <div className="products-table-modal">
+      <div className="products-table-modal-content">
+        <span className="products-table-close" onClick={onClose}>&times;</span>
+        <div className="products-table-textfield-input-container">
           <p>
             <label htmlFor="productId">Product ID:</label>
                 <input
@@ -51,7 +51,7 @@ const ProductsTablePopUp = function({onClose, onRefresh}) {
                   type="number"
                   value={productId}
                   onChange={(e) => setProductId(e.target.value)}
-                  className="textfield-input"
+                  className="products-table-textfield-input"
             />
           </p>
 
@@ -62,7 +62,7 @@ const ProductsTablePopUp = function({onClose, onRefresh}) {
                   type="text"
                   value={productName}
                   onChange={(e) => setProductName(e.target.value)}
-                  className="textfield-input"
+                  className="products-table-textfield-input"
             />
           </p>
 
@@ -73,7 +73,7 @@ const ProductsTablePopUp = function({onClose, onRefresh}) {
                   type="text"
                   value={productCategory}
                   onChange={(e) => setProductCategory(e.target.value)}
-                  className="textfield-input"
+                  className="products-table-textfield-input"
             />
           </p>
 
@@ -84,14 +84,14 @@ const ProductsTablePopUp = function({onClose, onRefresh}) {
                   type="text"
                   value={productPrice}
                   onChange={(e) => setProductPrice(e.target.value)}
-                  className="textfield-input"
+                  className="products-table-textfield-input"
             />
           </p>
 
-        <p className="center">
+        <p className="products-table-center">
           <button 
             type="button"
-            className="resend-payment-slip-btn big-font-btn"
+            className="products-table-resend-payment-slip-btn big-font-btn"
             onClick={handleAddProduct}>
             Add Product
           </button>

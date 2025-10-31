@@ -9,7 +9,7 @@ import './__root.css'
 const RootLayout = () => (
   <>
     <Outlet />
-    <TanStackRouterDevtools />
+    {/* <TanStackRouterDevtools /> */}
   </>
 )
 

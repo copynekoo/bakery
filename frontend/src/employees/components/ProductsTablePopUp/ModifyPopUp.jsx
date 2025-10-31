@@ -100,10 +100,10 @@ const ModifyPopUp = function({onClose, onRefresh, product}) {
   }
 
   return (
-    <div className="modal">
-      <div className="modal-content">
-        <span className="close" onClick={onClose}>&times;</span>
-        <div className="textfield-input-container">
+    <div className="modify-popup-modal">
+      <div className="modify-popup-modal-content">
+        <span className="modify-popup-close" onClick={onClose}>&times;</span>
+        <div className="modify-popup-textfield-input-container">
           <p>
             <label htmlFor="productId">Product ID:</label>
                 <input
@@ -111,7 +111,7 @@ const ModifyPopUp = function({onClose, onRefresh, product}) {
                   type="text"
                   value={productId}
                   disabled
-                  className="textfield-input"
+                  className="modify-popup-textfield-input"
             />
           </p>
 
@@ -122,7 +122,7 @@ const ModifyPopUp = function({onClose, onRefresh, product}) {
                   type="text"
                   value={productName}
                   onChange={(e) => setProductName(e.target.value)}
-                  className="textfield-input"
+                  className="modify-popup-textfield-input"
             />
           </p>
 
@@ -133,7 +133,7 @@ const ModifyPopUp = function({onClose, onRefresh, product}) {
                   type="text"
                   value={productCategory}
                   onChange={(e) => setProductCategory(e.target.value)}
-                  className="textfield-input"
+                  className="modify-popup-textfield-input"
             />
           </p>
 
@@ -144,18 +144,18 @@ const ModifyPopUp = function({onClose, onRefresh, product}) {
                   type="text"
                   value={productPrice}
                   onChange={(e) => setProductPrice(e.target.value)}
-                  className="textfield-input"
+                  className="modify-popup-textfield-input"
             />
           </p>
 
           <p>
 
-            <p className="on-sale-container">
-              <div className="on-sale-item">
+            <p className="modify-popup-on-sale-container">
+              <div className="modify-popup-on-sale-item">
                 <label htmlFor="onSale" className="inlineOnSale">On Sale</label>
               </div>
-              <div className="on-sale-item">
-                <div className="checkbox-wrapper-2">
+              <div className="modify-popup-on-sale-item">
+                <div className="modify-popup-checkbox-wrapper-2">
                   <input type="checkbox" id="onSale" checked={productOnSale} onChange={(e) => setProductOnSale(e.target.checked)} className="sc-gJwTLC ikxBAC"/>
                 </div>
               </div>
@@ -168,17 +168,17 @@ const ModifyPopUp = function({onClose, onRefresh, product}) {
               onChange={handleFileChange}
               style={{ display: 'none' }}
             />
-            <a className="upload-photo" onClick={() => handleButtonClick(productId)}>Upload product photo</a>
+            <a className="modify-popup-upload-photo" onClick={() => handleButtonClick(productId)}>Upload product photo</a>
             <p>
-              <a className="delete-item" onClick={handleDeleteProduct}>Delete product item</a>
+              <a className="modify-popup-delete-item" onClick={handleDeleteProduct}>Delete product item</a>
             </p>
 
           </p>
 
-        <p className="center">
+        <p className="modify-popup-center">
           <button 
             type="button"
-            className="resend-payment-slip-btn big-font-btn"
+            className="modify-popup-resend-payment-slip-btn big-font-btn"
             onClick={handleEditProduct}>
             Edit Product
           </button>
