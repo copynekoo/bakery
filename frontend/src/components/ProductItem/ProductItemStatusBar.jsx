@@ -97,7 +97,6 @@ const ProductItemStatusBar = function({remainingItem, p_price, p_id, p_name}) {
   return (
     <>
       <div className="productBar">
-        <div className="productBar-left">{remainingItem} In Stock</div>
         <div className="productBar-right">
           <input type="number" id="quantity" value={quantity} onChange={onChangeQuantity} onBlur={onBlurQuantity} name="quantity" min="1" max={remainingItem}/>
           <button className="addToCartButton" onClick={handleAddToCart}>Add to Cart</button>

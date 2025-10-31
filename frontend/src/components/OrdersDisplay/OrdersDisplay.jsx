@@ -194,7 +194,7 @@ function OrdersTable() {
                   <p key={index} className="order-item">
                     {item.quantity}x {item.p_name}{" "}
                     <span className="order-item-method">
-                      ({item.order_method})
+                      ({item.order_method}){" "}{item.product_price*item.quantity}{" Baht"}
                     </span>
                   </p>
                 ))}
@@ -202,7 +202,7 @@ function OrdersTable() {
 
               {/* Footer */}
               <div className="order-footer">
-                <p className="order-price">{calculatePrice(order)} Baht</p>
+                <p className="order-price">Total Price: {calculatePrice(order)} Baht</p>
 
                 {/* Right Side */}
                 <div>

@@ -269,7 +269,7 @@ const ShoppingCart = function() {
                 <div className="cart-item-body">
                   <div className="cart-item-pricing">
                     <div className="cart-item-price">
-                      {item.productPrice.toLocaleString("th-TH")} บาท each
+                      {item.productPrice.toLocaleString("th-TH")} Baht each
                     </div>
                     <div className="cart-item-subtotal">
                       Subtotal: {(item.productPrice * item.quantity).toLocaleString("th-TH")} บาท
@@ -306,9 +306,6 @@ const ShoppingCart = function() {
                       Remove
                     </button>
                   </div>
-                </div>
-                <div className="cart-item-footer">
-                  <span>In stock: {item.remainingStock}</span>
                 </div>
               </div>
             ))}
