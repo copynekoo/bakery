@@ -52,6 +52,7 @@ const ProductsTablePopUp = function({onClose, onRefresh}) {
                   value={productId}
                   onChange={(e) => setProductId(e.target.value)}
                   className="products-table-textfield-input"
+                  min="1"
             />
           </p>
 

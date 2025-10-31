@@ -7,7 +7,7 @@ const ProductItem = function({p_id, p_name, p_price, remainingItem, img_url}) {
       <img src={img_url} alt={p_name} style={{width: 100 + '%'}}/>
       <h2>{p_name}</h2>
       <p className="price">{p_price} บาท</p>
-      <ProductItemStatusBar p_id={p_id} remainingItem={remainingItem} p_price={p_price}/>
+      <ProductItemStatusBar p_id={p_id} remainingItem={remainingItem} p_price={p_price} p_name={p_name}/>
     </div> 
   )
 }
